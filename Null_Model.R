@@ -10,7 +10,6 @@
 # jutro, czwartek - inne modele
 # further steps 
 # demonstration how to use it with spark
-# tune parameters
 
 
 library(tidymodels)
@@ -54,12 +53,6 @@ vps_recipe <- training(vps_split) %>% # on which data
   step_scale(all_predictors(), -all_outcomes()) %>% # make vars standard dev of 1
   prep() # execute transformations
 
-vps_recipe <-  training(vps_split) %>% 
-  recipe(is_churn ~ .) %>% 
-  step_rm(id) %>% 
-  step_normalize(all_predictors()) %>%
-  prep()
-
 vps_recipe
 
 # Execute the pre-processing
@@ -74,54 +67,35 @@ vps_training <- juice(vps_recipe)
 
 glimpse(vps_training)
 
-# train model using random forest with 2 different engines
-#vps_ranger <- rand_forest(trees = 100, mode = "classification") %>%
-#  set_engine("ranger") %>%
-#  fit(is_churn ~ ., data = vps_training)
 
-vps_rf <-  rand_forest(mtry = 2, 
-                       min_n = 20,
-                       trees = 1000,
-                       mode = "classification") %>%
-  set_engine("randomForest") %>%
+# null model
+null_model <- null_model(mode = "classification") %>% 
+  set_engine("parsnip") %>%
   fit(is_churn ~ ., data = vps_training)
 
 # making predictions
 
-predict(vps_rf, vps_testing)
+predict(null_model, vps_testing)
 
 # truth and predicted values in one table
-vps_rf %>%
+null_model %>%
   predict(vps_testing) %>%
   bind_cols(vps_testing) %>%
   glimpse()
 
 # model validation
 
-vps_rf %>%
+null_model %>%
   predict(vps_testing) %>%
   bind_cols(vps_testing) %>%
-  metrics(truth = is_churn, estimate = .pred_class) # this is worse
-
-
-# use trained model to make predictions on production data
-production <- read_csv("./data/vps_test_data.txt")
-
-vps_production <- vps_recipe %>%
-  bake(production)
-
-tmp <- predict(vps_ranger, vps_production) %>% rename(is_churn = .pred_class)
-
-tmp %>% 
-  count(is_churn) %>% 
-  mutate(prop = n/sum(n))
+  metrics(truth = is_churn, estimate = .pred_class)
 
 # Per classifier metrics
-vps_rf %>%
+null_model %>%
   predict(vps_testing, type = "prob") %>%
   glimpse()
 
-vps_probs <- vps_rf %>%
+vps_probs <- null_model %>%
   predict(vps_testing, type = "prob") %>%
   bind_cols(vps_testing)
 
@@ -144,8 +118,9 @@ vps_probs%>%
 
 
 # combine two prediction modes
-predict(vps_rf, vps_testing, type = "prob") %>%
-  bind_cols(predict(vps_rf, vps_testing)) %>%
+
+predict(null_model, vps_testing, type = "prob") %>%
+  bind_cols(predict(null_model, vps_testing)) %>%
   bind_cols(select(vps_testing, is_churn)) %>%
   metrics(is_churn, .pred_No, estimate = .pred_class)
 

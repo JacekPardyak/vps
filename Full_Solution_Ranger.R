@@ -54,12 +54,6 @@ vps_recipe <- training(vps_split) %>% # on which data
   step_scale(all_predictors(), -all_outcomes()) %>% # make vars standard dev of 1
   prep() # execute transformations
 
-vps_recipe <-  training(vps_split) %>% 
-  recipe(is_churn ~ .) %>% 
-  step_rm(id) %>% 
-  step_normalize(all_predictors()) %>%
-  prep()
-
 vps_recipe
 
 # Execute the pre-processing
@@ -75,28 +69,30 @@ vps_training <- juice(vps_recipe)
 glimpse(vps_training)
 
 # train model using random forest with 2 different engines
-#vps_ranger <- rand_forest(trees = 100, mode = "classification") %>%
-#  set_engine("ranger") %>%
-#  fit(is_churn ~ ., data = vps_training)
+vps_ranger <- rand_forest(trees = 100, mode = "classification") %>%
+  set_engine("ranger") %>%
+  fit(is_churn ~ ., data = vps_training)
 
-vps_rf <-  rand_forest(mtry = 2, 
-                       min_n = 20,
-                       trees = 1000,
-                       mode = "classification") %>%
+vps_rf <-  rand_forest(trees = 100, mode = "classification") %>%
   set_engine("randomForest") %>%
   fit(is_churn ~ ., data = vps_training)
 
 # making predictions
 
-predict(vps_rf, vps_testing)
+predict(vps_ranger, vps_testing)
 
 # truth and predicted values in one table
-vps_rf %>%
+vps_ranger %>%
   predict(vps_testing) %>%
   bind_cols(vps_testing) %>%
   glimpse()
 
 # model validation
+
+vps_ranger %>%
+  predict(vps_testing) %>%
+  bind_cols(vps_testing) %>%
+  metrics(truth = is_churn, estimate = .pred_class)
 
 vps_rf %>%
   predict(vps_testing) %>%
@@ -117,11 +113,11 @@ tmp %>%
   mutate(prop = n/sum(n))
 
 # Per classifier metrics
-vps_rf %>%
+vps_ranger %>%
   predict(vps_testing, type = "prob") %>%
   glimpse()
 
-vps_probs <- vps_rf %>%
+vps_probs <- vps_ranger %>%
   predict(vps_testing, type = "prob") %>%
   bind_cols(vps_testing)
 
@@ -144,8 +140,14 @@ vps_probs%>%
 
 
 # combine two prediction modes
-predict(vps_rf, vps_testing, type = "prob") %>%
-  bind_cols(predict(vps_rf, vps_testing)) %>%
+predict(vps_ranger, vps_testing, type = "prob") %>%
+  bind_cols(predict(vps_ranger, vps_testing)) %>%
+  bind_cols(select(vps_testing, is_churn)) %>%
+  glimpse()
+
+
+predict(vps_ranger, vps_testing, type = "prob") %>%
+  bind_cols(predict(vps_ranger, vps_testing)) %>%
   bind_cols(select(vps_testing, is_churn)) %>%
   metrics(is_churn, .pred_No, estimate = .pred_class)
 
