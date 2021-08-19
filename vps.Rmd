@@ -1,5 +1,5 @@
 ---
-title: "VPS"
+title: "VPS Customer churn prediction"
 author: "JG Pardyak"
 date: "18-8-2021"
 output: beamer_presentation
@@ -9,27 +9,159 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## R Markdown
+## Presentantion outline
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+![Cross Industry Standard Process for Data Mining (Wirth & Hipp, 2000)](./img/CRISP-DM_Process_Diagram.png)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+## Business understanding
 
-## Slide with Bullets
+Company X sells a Virtual Private Server (VPS) as a service. The company wants to know which customers intend to leave VPS so they can devise an appropriate customer re-engagement strategy before it's too late.
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+## Data understanding
 
-## Slide with R Output
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+library(tidyverse)
+library(tidymodels)
+vps <- read_csv("./data/vps_churn_data.txt") %>%
+  mutate(is_churn = factor(ifelse(is_churn == 0, 
+                                  "No", "Yes")))
 
-```{r cars, echo = TRUE}
-summary(cars)
+vps %>% dim()
+```
+In this work we use *R* and *tidy-* libraries. All commands are visible to facilitate the verification of the presentation. We see that the dataset is composed of 283 observations described with 23 variables.
+
+
+## Data understanding cont.
+
+The two classes (is_churn = Yes and is_churn = No) are almost equally distributed.
+
+```{r, echo=TRUE}
+vps %>% 
+  count(is_churn) %>% 
+  mutate(prop = n/sum(n))
 ```
 
-## Slide with Plot
 
-```{r pressure}
-plot(pressure)
+## Data understanding cont.
+
+The dataset is complete - there are no missing values we have to deal with.
+
+```{r, echo=TRUE}
+vps %>% is.na() %>% colSums() %>% head(6)
+```
+
+## Data understanding cont.
+
+We check whether first variable can serve as a "good" predictor.
+
+```{r}
+vps %>%
+  ggplot(aes(x = cpu_load_mean_m_3, fill = is_churn)) +
+  geom_density(alpha = 0.3) 
+```
+
+## Data understanding cont.
+
+We check whether last variable can serve as a "good" predictor.
+
+```{r}
+library(ggmosaic)
+vps %>% 
+  mutate(categor_network_tx_max_gradient = cut(network_tx_max_gradient, breaks=c(-Inf, 0, Inf),
+                                       labels=c("negative","positive"))) %>%
+  ggplot()  +
+  geom_mosaic(aes(x = product( is_churn , categor_network_tx_max_gradient), fill = is_churn))
+```
+
+## Data preparation
+
+We split our data into training and test datasets.
+
+```{r, echo=TRUE}
+set.seed(1234)
+vps_split <- initial_split(vps, prop = 0.6, 
+                           strata = is_churn)
+vps_split
+```
+
+## Data preparation cont.
+
+We check the observations used for training.
+
+```{r}
+vps_split %>%
+  training() %>%
+  glimpse()
+```
+
+## Data preparation cont.
+
+We write recipe to prepare our data for training. Steps are described in comments.
+
+```{r, echo=TRUE}
+vps_recipe <- training(vps_split) %>% # on which data
+  recipe(is_churn ~.) %>% # training formula
+  step_rm(id) %>% # step remove id column
+  # remove variables highly correlated with other vars
+  step_corr(all_predictors()) %>% 
+  # make vars to be of mean zero
+  step_center(all_predictors(), -all_outcomes()) %>%
+  # make vars to be standard dev of 1
+  step_scale(all_predictors(), -all_outcomes()) %>% 
+  prep() # execute transformations
+```
+
+## Data preparation cont.
+
+We use previously written recipe to prepare *training* data.
+
+```{r, echo=TRUE}
+vps_training <- juice(vps_recipe)
+vps_training %>% select(1:10) %>% glimpse()
+```
+
+## Data preparation cont.
+
+We use previously written recipe to prepare *test* data.
+
+```{r, echo=TRUE}
+vps_testing <- vps_recipe %>%
+  bake(testing(vps_split))
+vps_testing %>% select(1:10) %>% glimpse()
+```
+
+## Modeling & Evaluation
+
+Further we will interlace **Modeling** and **Evaluation** steps for selected algorithms. Models are trained on previously selected sample and tested on another. Predicting power of each model is measured with *Accuracy* and *Area under curve* measures. We start from *Null model* - assumption that no one will churn.
+
+```{r, echo=TRUE}
+null_model <- null_model(mode = "classification") %>% 
+  set_engine("parsnip") %>%
+  fit(is_churn ~ ., data = vps_training)
+```
+
+## Modeling & Evaluation - null_model
+
+```{r}
+null_model %>%
+  predict(vps_testing) %>%
+  bind_cols(vps_testing) %>%
+  metrics(truth = is_churn, estimate = .pred_class)
+```
+
+## Modeling & Evaluation - null_model
+
+```{r}
+vps_probs <- null_model %>%
+  predict(vps_testing, type = "prob") %>%
+  bind_cols(vps_testing)
+```
+
+## Modeling & Evaluation - null_model
+
+```{r}
+vps_probs %>%
+  roc_curve(is_churn, .pred_No) %>%
+  autoplot()
 ```
 
