@@ -1,13 +1,20 @@
 ---
 title: "VPS Customer churn prediction"
 author: "JG Pardyak"
-date: "18-8-2021"
+date: "19-8-2021"
 output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+## As an introduction
+
+```{r, echo=FALSE, out.width="40%", fig.cap = "I did not expect that this interesting task would be intertwined with my long-awaited trip to Poland. So I start with Hello to everyone in front of the old locomotive in the city of Przeworsk. I tried my best to accomplish this task."}
+knitr::include_graphics("./img/jacek.jpeg")
+```
+
 
 ## Presentantion outline
 
@@ -132,36 +139,139 @@ vps_testing %>% select(1:10) %>% glimpse()
 
 ## Modeling & Evaluation
 
-Further we will interlace **Modeling** and **Evaluation** steps for selected algorithms. Models are trained on previously selected sample and tested on another. Predicting power of each model is measured with *Accuracy* and *Area under curve* measures. We start from *Null model* - assumption that no one will churn.
+Further we will interlace **Modeling** and **Evaluation** steps for selected algorithms. Previously defined *training* set is used to train models, the other *testing* for testing. Predicting power of each model is measured with *Accuracy* and *Area under curve* measures. 
+
+## Modeling & Evaluation cont.
+
+We start from *Null model* - assumption that no one will churn.
 
 ```{r, echo=TRUE}
 null_model <- null_model(mode = "classification") %>% 
   set_engine("parsnip") %>%
   fit(is_churn ~ ., data = vps_training)
+predict(null_model, vps_testing, type = "prob") %>%
+  bind_cols(predict(null_model, vps_testing)) %>%
+  bind_cols(select(vps_testing, is_churn)) %>%
+  metrics(is_churn, .pred_No, estimate = .pred_class)
 ```
 
-## Modeling & Evaluation - null_model
+## Modeling & Evaluation cont.
 
-```{r}
+From now on our goal is to beat 0.526 in accuracy, 0.5 in AUC and bend the ROC curve up.
+
+```{r,  fig.width = 3}
 null_model %>%
-  predict(vps_testing) %>%
-  bind_cols(vps_testing) %>%
-  metrics(truth = is_churn, estimate = .pred_class)
-```
-
-## Modeling & Evaluation - null_model
-
-```{r}
-vps_probs <- null_model %>%
   predict(vps_testing, type = "prob") %>%
-  bind_cols(vps_testing)
-```
-
-## Modeling & Evaluation - null_model
-
-```{r}
-vps_probs %>%
+  bind_cols(vps_testing) %>%
   roc_curve(is_churn, .pred_No) %>%
   autoplot()
 ```
 
+## Modeling & Evaluation cont.
+
+We will try to train `svm_poly()` - polynomial support vector machines model.
+
+```{r, echo=TRUE}
+vps_svm <- svm_poly(mode = "classification") %>% 
+  set_engine("kernlab") %>%
+  fit(is_churn ~ ., data = vps_training)
+```
+
+## Modeling & Evaluation cont.
+
+The `svm_poly()` model is performing worse than `null_model()`.
+
+```{r, echo=TRUE}
+predict(vps_svm, vps_testing, type = "prob") %>%
+  bind_cols(predict(vps_svm, vps_testing)) %>%
+  bind_cols(select(vps_testing, is_churn)) %>%
+  metrics(is_churn, .pred_No, estimate = .pred_class)
+```
+
+## Modeling & Evaluation cont.
+
+We will try to train `logistic_reg()` - generalized linear model for binary outcomes.
+
+```{r, echo=TRUE}
+vps_lreg <- logistic_reg(mode = "classification",
+                         engine = "glm") %>% 
+  fit(is_churn ~ ., data = vps_training)
+```
+
+## Modeling & Evaluation cont.
+
+The `logistic_reg()` model is performing worse in accuracy but better in AUC than `null_model()`.
+
+```{r, echo=TRUE}
+predict(vps_lreg, vps_testing, type = "prob") %>%
+  bind_cols(predict(vps_lreg, vps_testing)) %>%
+  bind_cols(select(vps_testing, is_churn)) %>%
+  metrics(is_churn, .pred_No, estimate = .pred_class)
+```
+
+## Modeling & Evaluation cont.
+
+We will try to train `rand_forest()` - model that creates a large number of decision trees.
+
+```{r, echo=TRUE}
+vps_rf <-  rand_forest(mode = "classification") %>%
+  set_engine("randomForest") %>%
+  fit(is_churn ~ ., data = vps_training)
+```
+
+## Modeling & Evaluation cont.
+
+The `rand_forest()` model is performing better in accuracy and AUC than `null_model()`.
+
+```{r, echo=TRUE}
+predict(vps_rf, vps_testing, type = "prob") %>%
+  bind_cols(predict(vps_rf, vps_testing)) %>%
+  bind_cols(select(vps_testing, is_churn)) %>%
+  metrics(is_churn, .pred_No, estimate = .pred_class)
+```
+
+## Modeling & Evaluation cont.
+
+Accuracy, AUC and ROC curve has been bent up comparing to null model.
+
+```{r,  fig.width = 3}
+vps_rf %>%
+  predict(vps_testing, type = "prob") %>%
+  bind_cols(vps_testing) %>%
+  roc_curve(is_churn, .pred_No) %>%
+  autoplot()
+```
+
+## Deployment
+
+The last model will be used to make predictions on production data. Output is available in https://github.com/JacekPardyak/vps repository.
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+production <- read_csv("./data/vps_test_data.txt")
+vps_production <- vps_recipe %>%
+  bake(production)
+
+tmp <- predict(vps_rf, vps_production) %>% 
+  rename(is_churn = .pred_class) %>%
+  mutate(is_churn = ifelse(is_churn == "Yes", 1, 0 ))
+
+production %>% select(! one_of('is_churn')) %>%
+  bind_cols(tmp) %>%
+  write_csv("./data/vps_test_data_pred.txt")
+
+```
+
+
+## Further steps
+
+In other circumstances, I would go further with:
+
+- feature engineering - combining and transforming further existing variables,
+
+- tuning parameters of already tested algorithms used to train models,
+
+- try another algorithms, such as: Boosted tree (XGBoost), K-nearest neighbor, Neural network with Keras
+
+- demonstrate how to use **SparkR** (R on Spark)
+
+  
