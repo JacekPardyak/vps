@@ -1,0 +1,472 @@
+---
+title: "VPS Customer churn prediction - Part 2"
+author: "JG Pardyak"
+date: "02-9-2021"
+output:
+  beamer_presentation:
+    slide_level: 2
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Introduction
+
+## Motivation
+
+This is the continuation of the presentation https://github.com/JacekPardyak/vps/blob/master/vps.pdf.
+
+# Data explorations & preparation
+
+## Loading data and libraries
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+library(tidyverse)
+library(tidymodels)
+library(GGally)
+vps <- read_csv("./data/vps_churn_data.txt") %>%
+  mutate(is_churn = factor(ifelse(is_churn == 0, 
+                                  "No", "Yes")))
+# this chunk is used to generate subsequent charts
+# vps %>% 
+#  ggscatmat(columns = c(2:7),
+#            color = 'is_churn', 
+#            corMethod = "spearman",
+#            alpha=0.2)
+```
+
+## Data explorations
+
+```{r, echo=FALSE}
+vps %>% 
+  ggscatmat(columns = c(2:6),
+            color = 'is_churn', 
+            corMethod = "spearman",
+            alpha=0.2)
+```
+
+
+## Data explorations cont.
+
+```{r, echo=FALSE}
+vps %>% 
+  ggscatmat(columns = c(7:11),
+            color = 'is_churn', 
+            corMethod = "spearman",
+            alpha=0.2)
+```
+
+## Data explorations cont.
+
+```{r, echo=FALSE}
+vps %>% 
+  ggscatmat(columns = c(12:16),
+            color = 'is_churn', 
+            corMethod = "spearman",
+            alpha=0.2)
+```
+
+## Data explorations cont.
+
+```{r, echo=FALSE}
+vps %>% 
+  ggscatmat(columns = c(17:22),
+            color = 'is_churn', 
+            corMethod = "spearman",
+            alpha=0.2)
+```
+
+## Data explorations cont.
+
+```{r, echo=FALSE}
+vps %>% 
+  ggplot(aes(x = disk_ops_read_mean_m_3, y = disk_octets_read_mean_m_3)) +
+  geom_point(color = "cornflowerblue") + labs(title = "The two most correlated variables")
+```
+
+
+## Data preparation
+
+```{r, echo=TRUE}
+# split data and write data preparation recipe 
+set.seed(1234)
+vps_split  <- vps %>% initial_split(prop = 3/4, strata = is_churn)
+train_data <- vps_split %>% training() 
+test_data  <- vps_split %>% testing()
+
+# for model evaluation we will use k-fold cross validation
+cv_folds <-
+ vfold_cv(vps, 
+          v = 5, 
+          strata = is_churn) 
+```
+
+## Data preparation cont.
+
+```{r, echo=TRUE, eval=FALSE}
+vps_recipe <-
+  recipe(is_churn ~.,
+         data = train_data) %>%
+  step_rm(id) %>% # step remove id column
+  step_log(all_nominal(), -all_outcomes()) %>% 
+  step_naomit(everything(), skip = TRUE) %>% 
+  step_novel(all_nominal(), -all_outcomes()) %>%
+  step_normalize(all_numeric(), -all_outcomes()) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_zv(all_numeric(), -all_outcomes()) %>%
+  step_corr(all_predictors(), threshold = 0.7, method = "spearman") 
+```
+
+## Other recipe
+
+```{r, echo=TRUE, eval=TRUE}
+vps_recipe <- train_data %>%
+  recipe(is_churn ~.) %>% # training formula
+  step_rm(id) %>% # step remove id column
+  # remove variables highly correlated with other vars
+  step_corr(all_predictors()) %>% 
+  # make vars to be of mean zero
+#  step_center(all_predictors(), -all_outcomes()) %>%
+  # make vars to be standard dev of 1
+  step_scale(all_predictors(), -all_outcomes())
+```
+
+
+## Data preparation cont.
+
+```{r, echo=TRUE}
+prepped_data <- 
+  vps_recipe %>% # use the recipe object
+  prep() %>% # perform the recipe on training data
+  juice() # extract only the preprocessed dataframe 
+
+glimpse(prepped_data) 
+```
+# Train models
+
+```{r}
+# For binary classification, the first factor level is assumed to be the event.
+# Use the argument `event_level = "second"` to alter this as needed.
+# is_churn = No is the positive class; summary(prepped_data[12])
+```
+
+## Null model
+
+```{r, echo=TRUE}
+null_spec <- null_model() %>% 
+  set_engine("parsnip") %>%
+  set_mode("classification")
+null_wflow <- 
+  workflow() %>% 
+  add_recipe(vps_recipe) %>%
+  add_model(null_spec)
+null_res <- 
+  null_wflow %>%
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set(recall, precision, f_meas,
+                         accuracy, kap, roc_auc, sens),
+    control = control_resamples(save_pred = TRUE))
+```
+
+##  Null model - cont.
+
+```{r, echo=TRUE}
+null_res %>%  collect_metrics(summarize = TRUE)
+```
+
+
+
+## Logistic regression
+
+```{r, echo=TRUE}
+log_spec <- # your model specification
+  logistic_reg() %>%  # model type
+  set_engine(engine = "glm") %>%  # model engine
+  set_mode("classification") # model mode
+log_wflow <- # new workflow object
+  workflow() %>% # use workflow function
+  add_recipe(vps_recipe) %>%   # use the new recipe
+  add_model(log_spec)   # add your model spec
+log_res <- 
+  log_wflow %>% 
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set(recall, precision, f_meas, 
+      accuracy, kap, roc_auc, sens), 
+    control = control_resamples(
+      save_pred = TRUE)
+  )
+```
+
+## Logistic regression - cont.
+
+```{r, echo=TRUE}
+log_res %>%  collect_metrics(summarize = TRUE)
+```
+
+
+## Random forest
+
+```{r, echo=TRUE}
+library(ranger)
+rf_spec <- 
+  rand_forest() %>% 
+  set_engine("ranger", importance = "impurity") %>% 
+  set_mode("classification")
+rf_wflow <-
+  workflow() %>%
+  add_recipe(vps_recipe) %>% 
+  add_model(rf_spec) 
+rf_res <-
+  rf_wflow %>% 
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set( recall, precision, f_meas, 
+      accuracy, kap, roc_auc, sens),
+    control = control_resamples(save_pred = TRUE)
+  )
+```
+
+## Random forest cont.
+
+```{r, echo=TRUE}
+rf_res %>%  collect_metrics(summarize = TRUE)
+```
+
+## XGBoost
+
+```{r, echo=TRUE, message=FALSE}
+library(xgboost)
+xgb_spec <- 
+  boost_tree() %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+xgb_wflow <-
+  workflow() %>%
+  add_recipe(vps_recipe) %>% 
+  add_model(xgb_spec)
+xgb_res <- 
+  xgb_wflow %>% 
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set(
+      recall, precision, f_meas, 
+      accuracy, kap,
+      roc_auc, sens),
+    control = control_resamples(save_pred = TRUE)
+  )
+```
+
+## XGBoost cont.
+
+```{r, echo=TRUE}
+xgb_res %>% collect_metrics(summarize = TRUE)
+```
+
+## K-nearest neighbor
+
+```{r, echo=TRUE, message=FALSE}
+knn_spec <- 
+  nearest_neighbor(neighbors = 4) %>% # we can adjust the number of neighbors 
+  set_engine("kknn") %>% 
+  set_mode("classification") 
+knn_wflow <-
+  workflow() %>%
+  add_recipe(vps_recipe) %>% 
+  add_model(knn_spec)
+knn_res <- 
+  knn_wflow %>% 
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set(recall, precision, f_meas, 
+      accuracy, kap, roc_auc, sens),
+    control = control_resamples(save_pred = TRUE)) 
+```
+
+## K-nearest neighbor cont.
+
+```{r, echo=TRUE}
+knn_res %>% collect_metrics(summarize = TRUE)
+```
+
+## Neural network
+
+```{r, echo=TRUE, message=FALSE}
+library(keras)
+nnet_spec <-
+  mlp() %>%
+  set_mode("classification") %>% 
+  set_engine("keras", verbose = 0) 
+nnet_wflow <-
+  workflow() %>%
+  add_recipe(vps_recipe) %>% 
+  add_model(nnet_spec)
+nnet_res <- 
+  nnet_wflow %>% 
+  fit_resamples(
+    resamples = cv_folds, 
+    metrics = metric_set(recall, precision, f_meas, 
+      accuracy, kap,roc_auc, sens),
+    control = control_resamples(save_pred = TRUE)) 
+```
+
+## Neural network cont.
+
+```{r, echo=TRUE}
+nnet_res %>% collect_metrics(summarize = TRUE)
+```
+
+# Evaluate models
+
+## Compare models
+
+```{r}
+null_metrics <- 
+  null_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Null (churns nobody)")
+
+log_metrics <- 
+  log_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Logistic Regression")
+
+rf_metrics <- 
+  rf_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Random Forest")
+
+xgb_metrics <- 
+  xgb_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "XGBoost")
+
+knn_metrics <- 
+  knn_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Knn")
+
+nnet_metrics <- 
+  nnet_res %>% 
+  collect_metrics(summarise = TRUE) %>%
+  mutate(model = "Neural Net")
+
+
+# create dataframe with all models
+model_compare <- bind_rows(
+  null_metrics,
+  log_metrics,
+  rf_metrics,
+  xgb_metrics,
+  knn_metrics,
+  nnet_metrics
+) 
+
+# change data structure
+model_comp <- 
+  model_compare %>% 
+  select(model, .metric, mean, std_err) %>% 
+  pivot_wider(names_from = .metric, values_from = c(mean, std_err)) 
+```
+
+
+```{r}
+model_comp %>% 
+  arrange(mean_f_meas) %>% 
+  mutate(model = fct_reorder(model, mean_f_meas)) %>% # order results
+  ggplot(aes(model, mean_f_meas, fill=model)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_brewer(palette = "Blues") +
+  geom_text( size = 3,
+    aes(label = round(mean_f_meas, 2), y = mean_f_meas + 0.08),
+    vjust = 1) + labs(title = "Mean F1-Score for every model")  + 
+  theme(legend.position = "none")
+```
+
+## Compare models - cont.
+
+```{r}
+model_comp %>% 
+  arrange(mean_roc_auc) %>% 
+  mutate(model = fct_reorder(model, mean_roc_auc)) %>%
+  ggplot(aes(model, mean_roc_auc, fill=model)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_brewer(palette = "Blues") + 
+  geom_text(size = 3,
+    aes(label = round(mean_roc_auc, 2), y = mean_roc_auc + 0.08),
+    vjust = 1) + labs(title = "Mean area under the curve (AUC) per model")  + 
+  theme(legend.position = "none")
+```
+
+# The best model
+
+## Metrics on test data
+
+```{r, echo=TRUE}
+last_fit_rf <- last_fit(rf_wflow, 
+                        split = vps_split,
+                        metrics = metric_set(recall, precision, f_meas, 
+                          accuracy, kap, roc_auc, sens))
+last_fit_rf %>% collect_metrics(summarize = TRUE)
+```
+
+## Variable importance 
+
+```{r, echo=FALSE, message=FALSE}
+library(vip)
+last_fit_rf %>% 
+  pluck(".workflow", 1) %>%   
+  extract_fit_parsnip() %>% 
+  vip(num_features = 5)
+```
+
+## Confusion matrix 
+
+```{r, echo=FALSE}
+last_fit_rf %>%
+    collect_predictions() %>% 
+  conf_mat(is_churn, .pred_class) %>% 
+  autoplot(type = "heatmap")
+```
+
+## ROC curve 
+
+```{r, echo=FALSE}
+last_fit_rf %>% 
+  collect_predictions() %>% 
+  roc_curve(is_churn, .pred_No) %>% 
+  autoplot()
+```
+
+# Model deployment
+
+
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+production <- read_csv("./data/vps_test_data.txt")
+tmp <- rf_wflow %>% fit(train_data) %>% predict(production) %>% 
+  rename(is_churn = .pred_class) %>%
+  mutate(is_churn = ifelse(is_churn == "Yes", 1, 0 ))
+
+production %>% select(! one_of('is_churn')) %>%
+  bind_cols(tmp) %>%
+  write_csv("./data/vps_test_data_pred_part_2.txt")
+
+```
+
+
+
+## Further steps
+
+- feature engineering - combining and transforming further existing variables,
+
+- tuning parameters of already tested algorithms used to train models,
+
+- demonstrate how to use **SparkR** (R on Spark)
+
+  
