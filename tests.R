@@ -1,16 +1,3 @@
-# plan
-# keep calm
-# 0. data preparation
-# 1. split data
-# 2. train model on train
-# 3. validate on test data
-# 4. make predictions for 'production' data
-# dzisiaj tylko demonstracja z : https://rviews.rstudio.com/2019/06/19/a-gentle-intro-to-tidymodels/
-# jutro, czwartek - inne modele
-# further steps 
-# demonstration how to use it with spark
-# tune parameters
-
 library(tidyverse)
 library(tidymodels)
 
@@ -18,15 +5,33 @@ library(tidymodels)
 vps <- read_csv("./data/vps_churn_data.txt") %>%
   mutate(is_churn = factor(ifelse(is_churn == 0, "No", "Yes")))
 
-vps %>% write_csv("./data/vps_churn_data.csv")
+# check outiers
+vars <- vps %>% names()
+vars
 
-# check proportions
-vps %>% 
-  count(is_churn) %>% 
-  mutate(prop = n/sum(n))
+disk_ops <- vars[agrep('disk_ops', vars)] # 6
+disk_octets <- vars[agrep('disk_octets', vars)] # 6
+cpu <- vars[agrep('cpu_', vars)] # 3
+network <- vars[agrep('network', vars)] # 6
 
-# check missing values
-is.na(vps) %>% colSums()
+vps_longer <- vps %>%
+  pivot_longer(., cols = !one_of('id', 'is_churn'), names_to = "Variable", values_to = "Value")
+
+vps_longer  %>% filter(Variable %in% disk_ops) %>%
+    ggplot(aes(x = Variable, y = Value, fill = is_churn)) +
+    geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
+  
+vps_longer  %>% filter(Variable %in% disk_octets) %>%
+  ggplot(aes(x = Variable, y = Value, fill = is_churn)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
+
+vps_longer  %>% filter(Variable %in% cpu) %>%
+  ggplot(aes(x = Variable, y = Value, fill = is_churn)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
+
+vps_longer  %>% filter(Variable %in% network) %>%
+  ggplot(aes(x = Variable, y = Value, fill = is_churn)) +
+  geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
 
 # show table in Viewer
 library(gt)
@@ -45,217 +50,167 @@ vps %>% skim()
 # plot histograms
 library(GGally)
 
-read_csv("./data/vps_churn_data.txt") %>% select(c(1:10, 23)) %>%
-  ggscatmat(alpha = 0.2)
-
-read_csv("./data/vps_churn_data.txt") %>% select(c(11:23)) %>%
-  ggscatmat(alpha = 0.2)
-
-# plot whiskers 
-vps %>% 
-  select(c(1:5, 23)) %>% 
-  ggpairs()
-vps %>% 
-  select(c(6:10, 23)) %>% 
-  ggpairs()
-vps %>% 
-  select(c(11:15, 23)) %>% 
-  ggpairs()
-vps %>% 
-  select(c(16: 23)) %>% 
-  ggpairs()
-
-
-
-# explore the data
-# strong positive correlation
-vps %>% names()
-vps %>% 
-  ggplot(aes(x = disk_ops_read_mean_m_3, y = disk_octets_read_mean_m_3)) +
-  geom_point(color = "cornflowerblue") + labs(title = "The two most correlated variables")
-
-
-
-vps %>% 
-  ggplot(aes(x = cpu_load_max_gradient, y = cpu_load_monthly_mean_delta)) +
-  geom_point(color = "cornflowerblue")
-
-# strong negative correlation
-vps %>% 
-  ggplot(aes(x = disk_octets_write_mean_m_3, y = network_rx_max_gradient)) +
-  geom_point(color = "cornflowerblue")
 
 vps %>% 
   ggplot(aes(x = disk_octets_write_mean_m_3, y = network_rx_max_gradient)) +
   geom_point(aes(color = is_churn), 
              alpha = 0.4)
 
-vps %>% 
-  ggscatmat(columns = c(2:7),
-            color = 'is_churn', 
-            corMethod = "spearman",
-            alpha=0.2)
-
-?ggscatmat
-
-
+### Start tuning parameters
 # split data into train and test
-set.seed(1234)
-vps_split <- initial_split(vps, prop = 3/4, strata = is_churn)
-vps_split
-
-# Create data frames for the two sets:
-train_data <- training(vps_split) 
-test_data <- testing(vps_split)
-
-
-# check the observations for training
-vps_split %>%
-  training() %>%
-  glimpse()
-
-# check proportions in training split
-vps_split %>%
-  training() %>% 
-  count(is_churn) %>% 
-  mutate(prop = n/sum(n))
-
-# check proportions in training split
-vps_split %>%
-  testing() %>% 
-  count(is_churn) %>% 
-  mutate(prop = n/sum(n))
+set.seed(123)
+vps_split <- initial_split(vps, strata = is_churn)
+vps_train <- training(vps_split)
+vps_test <- testing(vps_split)
 
 # prepare recipe 
+vps_rec <- recipe(is_churn ~ ., data = vps_train) %>%
+  update_role(id, new_role = "ID") %>%
+  step_corr(all_predictors()) %>% 
+  step_normalize(all_numeric(), -all_outcomes(), -id)
+#  step_other(species, caretaker, threshold = 0.01) %>%
+#  step_other(site_info, threshold = 0.005) %>%
+#  step_dummy(all_nominal(), -all_outcomes()) %>%
+#  step_date(date, features = c("year")) %>%
+#  step_rm(date) %>%
+#  step_downsample(legal_status)
 
-vps_recipe <-
-  recipe(is_churn ~.,
-         data = train_data) %>%
-  update_role(id, new_role = "ID") %>% 
-  step_log(all_nominal(), -all_outcomes()) %>% 
-  step_naomit(everything(), skip = TRUE) %>% 
-  step_novel(all_nominal(), -all_outcomes()) %>%
-  step_normalize(all_numeric(), -all_outcomes(), -id) %>% 
-  step_dummy(all_nominal(), -all_outcomes()) %>%
-  step_zv(all_numeric(), -all_outcomes(), -id) %>%
-  step_corr(all_predictors(), threshold = 0.7, method = "spearman") 
+vps_prep <- vps_rec %>% prep()
+#juiced <- juice(vps_prep)
 
-summary(vps_recipe)
-
-prepped_data <- 
-  vps_recipe %>% # use the recipe object
-  prep() %>% # perform the recipe on training data
-  juice() # extract only the preprocessed dataframe 
-
-# Take a look at the data structure:
-glimpse(prepped_data)
-
-prepped_data %>% 
-    ggscatmat(corMethod = "spearman",
-              alpha=0.2)
+tune_spec <- rand_forest(
+  mtry = tune(),
+  trees = 1000,
+  min_n = tune()
+) %>%
+  set_mode("classification") %>%
+  set_engine("ranger")
 
 
-#vps_recipe <- training(vps_split) %>% # on which data
-#  recipe(is_churn ~.) %>%
-#  step_rm(id) %>% # remove id
-#  step_corr(all_predictors()) %>% # remove variables highly correlated with other vars
-#  step_center(all_predictors(), -all_outcomes()) %>% # make vars to be of mean zero
-#  step_scale(all_predictors(), -all_outcomes()) %>% # make vars standard dev of 1
-#  prep() # execute transformations
+tune_wf <- workflow() %>%
+  add_recipe(vps_rec) %>%
+  add_model(tune_spec)
 
-vps_recipe
+set.seed(234)
+vps_folds <- vfold_cv(vps_train)
 
-# cross validation
-set.seed(100)
-cv_folds <-
-  vfold_cv(train_data, 
-           v = 5, 
-           strata = is_churn)
+doParallel::registerDoParallel()
 
-# train models
-# Logistic regression
-log_spec <- # your model specification
-  logistic_reg() %>%  # model type
-  set_engine(engine = "glm") %>%  # model engine
-  set_mode("classification") # model mode
+set.seed(345)
+tune_res <- tune_grid(
+  tune_wf,
+  resamples = vps_folds,
+  grid = 20
+)
 
-# Show your model specification
-log_spec
+tune_res
 
-log_wflow <- # new workflow object
-  workflow() %>% # use workflow function
-  add_recipe(vps_recipe) %>%   # use the new recipe
-  add_model(log_spec)   # add your model spec
-
-# show object
-log_wflow
-
-library(yardstick)
-
-log_res <- 
-  log_wflow %>% 
-  fit_resamples(
-    resamples = cv_folds, 
-    metrics = metric_set(
-      recall, precision, f_meas, 
-      accuracy, kap,
-      roc_auc), # , sens, spec
-    control = control_resamples(
-      save_pred = TRUE)
-  )
+tune_res %>%
+collect_metrics() %>%
+  filter(.metric == "roc_auc") %>%
+  select(mean, min_n, mtry) %>%
+  pivot_longer(min_n:mtry,
+               values_to = "value",
+               names_to = "parameter"
+  ) %>%
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~parameter, scales = "free_x") +
+  labs(x = NULL, y = "AUC")
 
 
-# save model coefficients for a fitted model object from a workflow
+rf_grid <- grid_regular(
+  mtry(range = c(1, 3)),
+  min_n(range = c(1, 5)),
+  levels = 5
+)
 
-get_model <- function(x) {
-  extract_fit_parsnip(x) %>% tidy()
-}
+rf_grid
 
-# same as before with one exception
-log_res_2 <- 
-  log_wflow %>% 
-  fit_resamples(
-    resamples = cv_folds, 
-    metrics = metric_set(
-      recall, precision, f_meas, 
-      accuracy, kap,
-      roc_auc), # , sens, spec
-    control = control_resamples(
-      save_pred = TRUE,
-      extract = get_model) # use extract and our new function
-  )
+set.seed(456)
+regular_res <- tune_grid(
+  tune_wf,
+  resamples = vps_folds,
+  grid = rf_grid
+)
 
-log_res_2$.extracts[[1]]
+regular_res
 
-log_res_2$.extracts[[1]][[1]]
-
-
-all_coef <- map_dfr(log_res_2$.extracts, ~ .x[[1]][[1]])
-# Show all of the resample coefficients for a single predictor:
-filter(all_coef, term == "cpu_load_mean_m_3")
-
-log_res %>%  collect_metrics(summarize = TRUE)
+regular_res %>%
+  collect_metrics() %>%
+  filter(.metric == "roc_auc") %>%
+  mutate(min_n = factor(min_n)) %>%
+  ggplot(aes(mtry, mean, color = min_n)) +
+  geom_line(alpha = 0.5, size = 1.5) +
+  geom_point() +
+  labs(y = "AUC")
 
 
-log_pred <- 
-  log_res %>%
-  collect_predictions()
+best_auc <- select_best(regular_res, "roc_auc")
 
-log_pred %>% 
-  conf_mat(is_churn, .pred_class)
+final_rf <- finalize_model(
+  tune_spec,
+  best_auc
+)
+
+final_rf
+
+library(vip)
+
+final_rf %>%
+  set_engine("ranger", importance = "permutation") %>%
+  fit(is_churn ~ .,
+      data = juice(vps_prep) %>% select(-id)
+  ) %>%
+  vip(geom = "point")
+
+final_wf <- workflow() %>%
+  add_recipe(vps_rec) %>%
+  add_model(final_rf)
+
+final_res <- final_wf %>%
+  last_fit(vps_split)
+
+final_res %>%
+  collect_metrics()
+
+final_res %>%
+  collect_predictions() %>% 
+  conf_mat(is_churn, .pred_class) %>% 
+  autoplot(type = "heatmap")
 
 
-log_pred %>% 
-  group_by(id) %>% # id contains our folds
-  roc_curve(is_churn, .pred_Yes) %>% 
-  autoplot()
 
+final_res %>%
+  collect_predictions() %>%
+  mutate(correct = case_when(
+    is_churn == .pred_class ~ "Correct",
+    TRUE ~ "Incorrect"
+  )) #%>%
+  bind_cols(vps_test) %>%
+  ggplot(aes(disk_octets_write_mean_m_3, y = network_rx_max_gradient, color = correct)) + #network_tx_mean_m_3
+  geom_point(size = 0.5, alpha = 0.5) +
+  labs(color = NULL) +
+  scale_color_manual(values = c("gray80", "darkred"))
 
-log_pred %>% 
-  ggplot() +
-  geom_density(aes(x = .pred_Yes, 
-                   fill = is_churn), 
-               alpha = 0.5)
+### 
+
+production <- read_csv("./data/vps_test_data.txt")
+vps_production <- vps_rec %>% prep() %>% 
+  bake(production)
+vps_production %>% glimpse()
+
+tmp <- final_rf %>%
+  set_engine("ranger", importance = "permutation") %>%
+  fit(is_churn ~ ., data = juice(vps_prep)) %>% predict(vps_production) %>% 
+  rename(is_churn = .pred_class) %>%
+  mutate(is_churn = ifelse(is_churn == "Yes", 1, 0 ))
+
+production %>% select(! one_of('is_churn')) %>%
+  bind_cols(tmp) %>%
+  write_csv("./data/vps_test_data_pred_part_3.txt")
+
+table(tmp$is_churn)
 
 
 ###  
@@ -291,7 +246,7 @@ rf_res %>%  collect_metrics(summarize = TRUE)
 library(xgboost)
 
 xgb_spec <- 
-  boost_tree() %>% 
+  boost_vps() %>% 
   set_engine("xgboost") %>% 
   set_mode("classification")
 
