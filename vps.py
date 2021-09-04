@@ -1,8 +1,9 @@
-x = ['Python', 'programming', 'is', 'awesome!']
-print(sorted(x))
+import pandas as pd
 
-print(sorted(x, key=lambda arg: arg.lower()))
+df = pd.read_csv(r'data/vps_churn_data.txt')
+print (df)
+df.to_json (r'data/vps_churn_data_py.json')
 
-#from pyspark.sql import SparkSession
-
-#spark = SparkSession.builder.getOrCreate()
+df = pd.read_csv(r'data/vps_test_data.txt')
+print (df)
+df.to_json (r'data/vps_test_data_py.json')
