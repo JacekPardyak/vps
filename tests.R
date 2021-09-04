@@ -1,4 +1,301 @@
 library(tidyverse)
+library(sparklyr)
+#spark_install(version = "2.1.0")
+
+sc <- spark_connect(master = "local")
+
+vps <- read_csv("./data/vps_churn_data.txt") # %>% mutate(is_churn = factor(ifelse(is_churn == 0, "No", "Yes")))
+
+
+numericData <- vps
+
+# Calculate correlation matrix
+descrCor <- cor(numericData)
+
+# Print correlation matrix and look at max correlation
+print(descrCor)
+summary(descrCor[upper.tri(descrCor)])
+
+# Check Correlation Plot
+corrplot(descrCor, order = "FPC", method = "color", type = "lower", tl.cex = 0.7, tl.col = rgb(0, 0, 0))
+
+# find attributes that are highly corrected
+highlyCorrelated <- findCorrelation(descrCor, cutoff=0.7)
+
+# print indexes of highly correlated attributes
+print(highlyCorrelated)
+
+# Indentifying Variable Names of Highly Correlated Variables
+highlyCorCol <- colnames(numericData)[highlyCorrelated]
+
+# Print highly correlated attributes
+highlyCorCol
+
+# Remove highly correlated variables and create a new dataset
+dat3 <- dat2[, -which(colnames(dat2) %in% highlyCorCol)]
+dim(dat3)
+
+
+
+
+
+
+vps_tbl <- copy_to(sc, vps, overwrite = TRUE)
+
+# random forest , evaluation on training data
+rf_model <- vps_tbl %>%
+  ml_random_forest(is_churn ~ network_tx_mean_m_3 + cpu_load_mean_m_3, type = "classification")
+## * No rows dropped by 'na.omit' call
+rf_predict <- ml_predict(rf_model, vps_tbl) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>%
+  collect
+
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+
+# random forest , evaluation on test data
+partitions <- tbl(sc, "vps") %>%
+  sdf_random_split(training = 0.6, test = 0.4, seed = 1099)
+
+rf_model <- partitions$training %>%
+  ml_random_forest(is_churn ~ network_tx_mean_m_3 + cpu_load_mean_m_3, type = "classification")
+
+rf_predict <- ml_predict(rf_model, partitions$test) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>%
+  collect
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+
+# random forest , evaluation on test data, full formula
+partitions <- tbl(sc, "vps") %>%
+  sdf_random_split(training = 0.6, test = 0.4, seed = 1099)
+
+rf_model <- partitions$training %>%
+  ml_random_forest(is_churn ~ ., type = "classification")
+
+rf_predict <- ml_predict(rf_model, partitions$test) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>%
+  collect
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+
+# random forest , evaluation on test data, full formula
+partitions <- tbl(sc, "vps") %>%
+  sdf_random_split(training = 0.6, test = 0.4, seed = 1099)
+
+rf_model <- partitions$training %>%
+  ml_random_forest(is_churn ~ ., type = "classification")
+
+rf_predict <- ml_predict(rf_model, partitions$test) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>%
+  collect
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+
+
+# random forest , evaluation on test data, drop highly correlated vars
+library(caret)
+
+vars <- vps %>% names()
+ind <- vps %>% cor() #%>% findCorrelation(cutoff=0.6)
+ind %>% tibble() %>% summarise_if(is.numeric, min)
+
+vars <- setdiff(vars, vars[ind])
+vars
+
+vps %>% cor() %>% corrplot(order = "FPC", method = "color", type = "lower",
+                           tl.cex = 0.7, tl.col = rgb(0, 0, 0))
+vps %>% cor() %>% findCorrelation(cutoff=0.6) -> idx
+vars[idx]
+
+formula <- formula(paste("is_churn ~ ", paste(vars[c(-1,-length(vars))], collapse = " + ")))
+formula
+
+partitions <- tbl(sc, "vps") %>% 
+  mutate(cpu_load_mean_m_3 = ft_standard_scaler(cpu_load_mean_m_3)) %>%
+  sdf_random_split(training = 0.6, test = 0.4, seed = 888)
+
+rf_model <- partitions$training %>%
+  ml_random_forest(formula, type = "classification")
+
+rf_predict <- ml_predict(rf_model, partitions$test) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>%
+  collect
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+
+
+features <- c("cpu_load_mean_m_3", "disk_ops_read_mean_m_3")
+
+tbl(sc, "vps")  %>%
+  ft_standard_scaler(
+    input_col = "cpu_load_mean_m_3",
+    output_col = "cpu_load_mean_m_3_temp",
+    with_mean = TRUE
+  )
+  
+  
+  
+tbl(sc, "vps") %>%
+  ft_vector_assembler(
+    input_col = "cpu_load_mean_m_3",
+    output_col = "cpu_load_mean_m_3_temp") %>%
+  ft_standard_scaler(
+    input_col = "cpu_load_mean_m_3_temp",
+    output_col = "cpu_load_mean_m_3_t",
+    with_mean = TRUE
+  )
+
+  
+sc <- spark_connect(master = "local")
+iris_tbl <- sdf_copy_to(sc, iris, name = "iris_tbl", overwrite = TRUE)
+
+features <- c("Sepal_Length", "Sepal_Width", "Petal_Length", "Petal_Width")
+
+iris_tbl %>%
+  ft_vector_assembler(
+    input_col = features,
+    output_col = "features_temp"
+  ) %>%
+  ft_standard_scaler(
+    input_col = "features_temp",
+    output_col = "features",
+    with_mean = TRUE
+  )  
+  
+iris_tbl 
+  
+  ft_vector_assembler(
+    input_col = features,
+    output_col = "features_temp"
+  ) %>%
+  ft_standard_scaler(
+    input_col = "features_temp",
+    output_col = "features",
+    with_mean = TRUE
+  ) %>%
+  collect
+
+
+
+
+
+tbl(sc, "vps")  %>%
+  ft_vector_assembler(
+    input_col = features,
+    output_col = "features_temp"
+  ) 
+
+
+
+
+tbl(sc, "vps")
+
+?ft_standard_scaler
+
+
+dplyr::src_tbls(sc)
+
+spark_disconnect(sc)
+
+
+
+
+library("nycflights13")
+library("Lahman")
+
+library(tidyverse)
+iris_tbl <- copy_to(sc, iris)
+flights_tbl <- copy_to(sc, nycflights13::flights, "flights")
+batting_tbl <- copy_to(sc, Lahman::Batting, "batting")
+dplyr::src_tbls(sc)
+
+# filter by departure delay and print the first few records
+flights_tbl %>% filter(dep_delay == 2)
+
+
+delay <- flights_tbl %>%
+  group_by(tailnum) %>%
+  summarise(count = n(), dist = mean(distance), delay = mean(arr_delay)) %>%
+  filter(count > 20, dist < 2000, !is.na(delay)) %>%
+  collect
+
+# plot delays
+library(ggplot2)
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth() +
+  scale_size_area(max_size = 2)
+
+batting_tbl %>%
+  select(playerID, yearID, teamID, G, AB:H) %>%
+  arrange(playerID, yearID, teamID) %>%
+  group_by(playerID) %>%
+  filter(min_rank(desc(H)) <= 2 & H > 0)
+
+
+library(DBI)
+iris_preview <- dbGetQuery(sc, "SELECT * FROM iris LIMIT 10")
+iris_preview
+
+# copy mtcars into spark
+mtcars_tbl <- copy_to(sc, mtcars)
+
+# transform our data set, and then partition into 'training', 'test'
+partitions <- mtcars_tbl %>%
+  filter(hp >= 100) %>%
+  mutate(cyl8 = cyl == 8) %>%
+  sdf_random_split(training = 0.5, test = 0.5, seed = 1099)
+
+# fit a linear model to the training dataset
+fit <- partitions$training %>%
+  ml_linear_regression(response = "mpg", features = c("wt", "cyl"))
+fit
+
+
+summary(fit)
+
+## Reading and Writing Data
+
+temp_csv <- tempfile(fileext = ".csv")
+temp_parquet <- tempfile(fileext = ".parquet")
+temp_json <- tempfile(fileext = ".json")
+
+spark_write_csv(iris_tbl, temp_csv)
+iris_csv_tbl <- spark_read_csv(sc, "iris_csv", temp_csv)
+
+spark_write_parquet(iris_tbl, temp_parquet)
+iris_parquet_tbl <- spark_read_parquet(sc, "iris_parquet", temp_parquet)
+
+spark_write_json(iris_tbl, temp_json)
+iris_json_tbl <- spark_read_json(sc, "iris_json", temp_json)
+
+dplyr::src_tbls(sc)
+
+
+spark_web(sc)
+
+spark_disconnect(sc)
+
+## Using H2O
+# rsparkling is a CRAN package from H2O that extends sparklyr to provide an interface into Sparkling Water. For instance, the following example installs, configures and runs h2o.glm:
+  
+options(rsparkling.sparklingwater.version = "2.1.14")
+
+library(rsparkling)
+library(sparklyr)
+library(dplyr)
+library(h2o)
+h2o.init()
+sc <- spark_connect(master = "local", version = "2.1.0")
+mtcars_tbl <- copy_to(sc, mtcars, "mtcars", overwrite = TRUE)
+
+mtcars_h2o <- h2o::as.h2o(mtcars_tbl)
+
+?as.h2o.data.frame
+mtcars_glm <- h2o.glm(x = c("wt", "cyl"),
+                      y = "mpg",
+                      training_frame = mtcars_h2o,
+                      lambda_search = TRUE)
+mtcars_glm
+
+## --------------------
+
 library(tidymodels)
 
 # read churn historical data
@@ -546,5 +843,9 @@ predict(vps_ranger, vps_testing, type = "prob") %>%
   metrics(is_churn, .pred_No, estimate = .pred_class)
 
 
+#### -----------------------------------------------
+spark_disconnect(sc)
+sc <- spark_connect(master = "local")
+src_tbls(sc)
 
 
