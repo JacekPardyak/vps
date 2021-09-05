@@ -121,18 +121,15 @@ vps_preview
 
 # Machine Learning
 
-## Random forest, all vars, evaluation on all data
+## Random forest, all vars, training & evaluation on all data
 
 ```{r, echo=TRUE}
 rf_model <- vps_tbl %>%
   ml_random_forest(is_churn ~ ., type = "classification")
-
 rf_predict <- ml_predict(rf_model, vps_tbl) %>%
   ft_string_indexer("is_churn", "is_churn_idx") %>% collect
-
 table(rf_predict$is_churn_idx, rf_predict$prediction)
-validation_summary <- ml_evaluate(rf_model, vps_tbl)
-validation_summary
+ml_evaluate(rf_model, vps_tbl)
 ```
 
 ## Random forest, all vars, evaluation on test data
@@ -140,22 +137,17 @@ validation_summary
 ```{r, echo=TRUE}
 partitions <- tbl(sc, "vps") %>%
   sdf_random_split(training = 0.6, test = 0.4, seed = 888)
-
 rf_model <- partitions$training %>%
   ml_random_forest(is_churn ~ ., type = "classification")
-
 rf_predict <- ml_predict(rf_model, partitions$test) %>%
-  ft_string_indexer("is_churn", "is_churn_idx") %>%
-  collect
+  ft_string_indexer("is_churn", "is_churn_idx") %>% collect
 table(rf_predict$is_churn_idx, rf_predict$prediction)
-
-validation_summary <- ml_evaluate(rf_model, partitions$test)
-validation_summary
+ml_evaluate(rf_model, partitions$test)
 ```
 
 ## Correlations
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(corrr)
 correlation_matrix <- vps_tbl %>% correlate(use = "pairwise.complete.obs", method = "pearson")  #%>% collect
 correlation_matrix %>% shave() %>% rplot()
@@ -180,7 +172,7 @@ correlated_features
 
 ## Random forest, chosen vars, evaluation on test data
 
-```{r, echo=TRUE}
+```{r, echo=FALSE}
 features <- c( "cpu_load_mean_m_3",
                "disk_octets_read_mean_m_3",
                "disk_octets_write_mean_m_3",
@@ -206,25 +198,26 @@ features <- c( "cpu_load_mean_m_3",
 features <- setdiff(features, correlated_features)
 
 formula <- formula(paste("is_churn ~ ", paste(features, collapse = " + ")))
-formula
-
-
-partitions <- tbl(sc, "vps") %>%
- sdf_random_split(training = 0.6, test = 0.4, seed = 888)
-
-rf_model <- partitions$training %>%
-  ml_random_forest(formula, type = "classification")
-
-rf_predict <- ml_predict(rf_model, partitions$test) %>%
-  ft_string_indexer("is_churn", "is_churn_idx") %>%
-  collect
-table(rf_predict$is_churn_idx, rf_predict$prediction)
-
-validation_summary <- ml_evaluate(rf_model, partitions$test)
-validation_summary
-
+#formula
 ```
 
+
+```{r, echo=TRUE}
+partitions <- tbl(sc, "vps") %>%
+ sdf_random_split(training = 0.6, test = 0.4, seed = 888)
+rf_model <- partitions$training %>%
+  ml_random_forest(formula, type = "classification")
+rf_predict <- ml_predict(rf_model, partitions$test) %>%
+  ft_string_indexer("is_churn", "is_churn_idx") %>% collect
+table(rf_predict$is_churn_idx, rf_predict$prediction)
+ml_evaluate(rf_model, partitions$test)
+```
+
+# PySpark
+
+```{r, echo=FALSE, out.width="100%", fig.cap = "In this Colaboratory notebook you will find a step-by-step guide on how to use PySpark for the classification of VPS customers with Random Forest Classifier. https://github.com/JacekPardyak/vps/blob/master/pyspark.ipynb"}
+knitr::include_graphics("./img/Colab.PNG")
+```
 
 
 # Further steps

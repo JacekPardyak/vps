@@ -1,5 +1,0 @@
-Prerequsited :
-Deploying Hortonworks Sandbox on Docker
-- https://www.cloudera.com/tutorials/sandbox-deployment-and-install-guide/3.html
-
-check intallation : http://127.0.0.1:8080 
