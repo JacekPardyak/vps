@@ -851,6 +851,5 @@ src_tbls(sc)
 ### 
 
 data("iris") 
-iris %>%  write_csv("./data/IRIS.csv")
-
+iris %>% rename_with(~ tolower(gsub(".", "_", .x, fixed = TRUE))) %>% write_csv("./data/IRIS.csv")
 
