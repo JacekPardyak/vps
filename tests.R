@@ -848,4 +848,9 @@ spark_disconnect(sc)
 sc <- spark_connect(master = "local")
 src_tbls(sc)
 
+### 
+
+data("iris") 
+iris %>%  write_csv("./data/IRIS.csv")
+
 
