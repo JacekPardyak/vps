@@ -213,12 +213,23 @@ table(rf_predict$is_churn_idx, rf_predict$prediction)
 ml_evaluate(rf_model, partitions$test)
 ```
 
-# PySpark
+# Python
 
-```{r, echo=FALSE, out.width="100%", fig.cap = "In this Colaboratory notebook you will find a step-by-step guide on how to use PySpark for the classification of VPS customers with Random Forest Classifier. https://github.com/JacekPardyak/vps/blob/master/pyspark.ipynb"}
-knitr::include_graphics("./img/Colab.PNG")
+## PySpark
+
+```{r, echo=FALSE, out.width="100%", fig.cap = "In this Colaboratory notebook you will find a step-by-step guide on how to use PySpark for the classification of VPS customers."}
+knitr::include_graphics("./img/Colab-pyspark.PNG")
 ```
 
+https://github.com/JacekPardyak/vps/blob/master/VPS_pyspark.ipynb
+
+## H2O
+
+```{r, echo=FALSE, out.width="100%", fig.cap = "In this Colaboratory notebook you will find a step-by-step guide on how to use H2O for the classification of VPS customers."}
+knitr::include_graphics("./img/Colab-h2o.PNG")
+```
+
+https://github.com/JacekPardyak/vps/blob/master/VPS_H2O.ipynb
 
 # Further steps
 
