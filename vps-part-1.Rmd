@@ -2,7 +2,9 @@
 title: "VPS Customer churn prediction"
 author: "JG Pardyak"
 date: "19-8-2021"
-output: beamer_presentation
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
 ---
 
 ```{r setup, include=FALSE}

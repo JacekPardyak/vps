@@ -1,5 +1,5 @@
 ---
-title: "VPS Customer churn prediction - Part 2"
+title: "VPS Customer churn prediction - Part 4"
 author: "JG Pardyak"
 date: "03-9-2021"
 output:

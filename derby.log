@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Tue Sep 14 14:21:29 CEST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-017b-e441-4b6b-00001e451608 
-on database directory memory:C:\Users\jacek\OneDrive\Documents\vps\databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@423c8de 
-Loaded from file:/C:/Users/jacek/AppData/Local/spark/spark-3.1.1-bin-hadoop2.7/jars/derby-10.12.1.1.jar
+Mon Oct 04 15:40:34 CEST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-017c-4b88-e081-000020fad000 
+on database directory memory:C:\Users\Jacek Pardyak\Documents\vps\databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@5f793da6 
+Loaded from file:/C:/Users/Jacek%20Pardyak/AppData/Local/spark/spark-3.1.1-bin-hadoop2.7/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_291-b10
-user.dir=C:\Users\jacek\OneDrive\Documents\vps
+java.runtime.version=1.8.0_301-b09
+user.dir=C:\Users\Jacek Pardyak\Documents\vps
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0

@@ -1,0 +1,21 @@
+\frametitle{Deployment}
+\protect\hypertarget{deployment}{}
+The last model will be used to make predictions on production data.
+Output is available in \url{https://github.com/JacekPardyak/vps}
+repository.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{production }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"./data/vps\_test\_data.txt"}\NormalTok{)}
+\NormalTok{vps\_production }\OtherTok{\textless{}{-}}\NormalTok{ vps\_recipe }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bake}\NormalTok{(production)}
+
+\NormalTok{tmp }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(vps\_rf, vps\_production) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{is\_churn =}\NormalTok{ .pred\_class) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{is\_churn =} \FunctionTok{ifelse}\NormalTok{(is\_churn }\SpecialCharTok{==} \StringTok{"Yes"}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{ ))}
+
+\NormalTok{production }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{!} \FunctionTok{one\_of}\NormalTok{(}\StringTok{\textquotesingle{}is\_churn\textquotesingle{}}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(tmp) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{write\_csv}\NormalTok{(}\StringTok{"./data/vps\_test\_data\_pred.txt"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
