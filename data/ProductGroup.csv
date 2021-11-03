@@ -1,0 +1,679 @@
+,id,name,depth,parentCategoryId
+0,2707,VPS Services,2,2704
+1,2710,Signet VPS Services,3,2707
+2,2713,VPS Services,4,2710
+3,2716,VPS Services,5,2713
+4,2719,VPS Server Management,6,2716
+5,2725,Blade VPS Add-ons,3,2722
+6,2728,BladeVPS Product Add-ons,4,2725
+7,2731,Big Storage,5,2728
+8,2734,Big Storage,6,2731
+9,2737,HA-IP,5,2728
+10,2740,HA-IP,6,2737
+11,2743,Private Cloud,5,2728
+12,2746,Private Cloud,6,2743
+13,2749,Private Network,5,2728
+14,2752,Private Network,6,2749
+15,2755,VPS Specific Add-ons,4,2725
+16,2761,Offsite Back-ups,6,4618
+17,2764,Weekly Back-ups,6,4618
+18,2767,Data traffic,5,2755
+19,2770,Data traffic,6,2767
+20,2773,Extra CPU,5,2755
+21,2776,Extra CPU,6,2773
+22,2779,Extra Disk space,5,2755
+23,2782,Extra Disk space,6,2779
+24,2785,Extra IP,5,2755
+25,2788,Extra IP,6,2785
+26,2791,Extra RAM,5,2755
+27,2794,Extra RAM,6,2791
+28,2797,Extra Snapshot,5,2755
+29,2800,Extra Snapshot,6,2797
+30,2803,VPS monitoring,5,2755
+31,2806,VPS monitoring,6,2803
+32,2809,Licenses,3,2722
+33,2815,Plesk Add-ons,5,4531
+34,2818,Plesk Add-ons,6,2815
+35,2821,Control Panel Resale,4,2809
+36,2824,cPanel license,5,2821
+37,2827,CPanel admin,6,2824
+38,2830,cPanel license,6,2824
+39,2833,CPanel plus,6,2824
+40,2836,cPanel Premier,6,2824
+41,2839,cPanel Premier Add-ons,6,2824
+42,2842,CPanel pro,6,2824
+43,2845,DirectAdmin,5,2821
+44,2848,DirectAdmin,6,2845
+45,2851,Plesk,5,2821
+46,2854,Plesk,6,2851
+47,2860,MS Exchange,5,2857
+48,2863,MS Exchange Enterprise,6,2860
+49,2866,MS Exchange Standard,6,2860
+50,2869,MS Office,5,2857
+51,2872,MS Office professional,6,2869
+52,2875,MS Office Standard,6,2869
+53,2878,MS SQL,5,2857
+54,2881,MS SQL server Enterprise,6,2878
+55,2884,MS SQL server Standard,6,2878
+56,2887,MS SQL server Web,6,2878
+57,2890,MS Windows Server,5,2857
+58,2893,MS Windows server Enterprise,6,2890
+59,2896,MS Windows server Standard,6,2890
+60,2899,Windows Remote Desktop,5,2857
+61,2902,Windows Remote Desktop,6,2899
+62,2905,DirectAdmin,4,4754
+63,2908,Other Licenses,4,4745
+64,2911,Plesk,4,4757
+65,2914,Sophos,4,4748
+66,2920,VPS Product Add-ons,4,2917
+67,2923,Signet VPS Add-ons,3,2722
+68,2926,VPS Spec Add-ons,4,2923
+69,2929,E-mail Brick Level Back-Up,6,4576
+70,2932,Server Back-ups,6,4597
+71,2938,Blade VPS,3,2935
+72,2941,Internal use VPS,4,2938
+73,2944,Internal use VPS,5,2941
+74,2947,Internal use VPS,6,2944
+75,2953,VPS Pro,5,4471
+76,2956,B16,6,2953
+77,2959,B32,6,2953
+78,2962,B64,6,2953
+79,2965,employee VPS,6,2953
+80,2968,X16,6,2953
+81,2971,X24,6,2953
+82,2974,X64,6,2953
+83,2977,VPS Standard,5,4471
+84,2980,B2,6,2977
+85,2983,B4,6,2977
+86,2986,B8,6,2977
+87,2989,X1,6,2977
+88,2992,X4,6,2977
+89,2995,X8,6,2977
+90,3001,VPS Overusage,5,2998
+91,3004,VPS Overusage,6,3001
+92,3010,MKE VPS,4,3007
+93,3013,Openstack,3,5093
+94,3016,Other VPS,3,2935
+95,3022,VPS,3,4946
+96,3025,Signet VPS,3,2935
+97,3028,VPS Server,5,4441
+98,3031,VPS,6,3028
+99,3034,VPS Basis,6,3028
+100,3037,VPS Extra,6,3028
+101,3040,VPS Lite,6,3028
+102,3043,VPS Plus,6,3028
+103,3046,Domain & Shared Hosting,1,0
+104,3049,Domain,2,3046
+105,3052,Domain registration others,3,4688
+106,3058,Domain registration others,5,3055
+107,3061,Domains .blog,6,3058
+108,3064,Domains .center,6,3058
+109,3067,Domains .ch,6,3058
+110,3070,Domains .cloud,6,3058
+111,3073,Domains .de,6,3058
+112,3076,Domains .dk,6,3058
+113,3079,Domains .finance,6,3058
+114,3082,Domains .info,6,3058
+115,3085,Domains .net,6,3058
+116,3088,Domains .no,6,3058
+117,3091,Domains .nu,6,3058
+118,3094,Domains .org,6,3058
+119,3097,Domains .ro,6,3058
+120,3100,Domains .se,6,3058
+121,3103,Domains .be,3,4688
+122,3109,Domains .be,5,3106
+123,3112,Domains .be,6,3109
+124,3115,Domains .com,3,4688
+125,3121,Domains .com,5,3118
+126,3124,Domains .com,6,3121
+127,3127,Domains .eu,3,4688
+128,3133,Domains .eu,5,3130
+129,3136,Domains .eu,6,3133
+130,3139,Domains .nl,3,4688
+131,3145,Domains .nl,5,3142
+132,3148,Domains .nl,6,3145
+133,3151,Other Domain services,3,3049
+134,3154,CHOWN,4,4700
+135,3157,DNS Only,4,3151
+136,3160,Redemption,4,4703
+137,3163,Trustee servicve,4,4706
+138,3166,Whitelabel,4,4709
+139,3169,Legacy,3,3643
+140,3172,Subdomains,3,3049
+141,3175,Subdomains,4,3172
+142,3178,Subdomains,5,3175
+143,3181,Subdomains,6,3178
+144,3184,E-mail,2,4865
+145,3190,E-mail,4,4579
+146,3199,E-mail services,5,3196
+147,3202,Anti-Spam,6,3199
+148,3205,E-mail Accounts,6,3199
+149,3208,Forwarding,2,3046
+150,3211,Forwarding,3,4691
+151,3214,Forwarding,4,3211
+152,3217,SSL Certificates,2,4718
+153,3223,SSL DV,4,3220
+154,3226,SSL DV Wildcard,4,3220
+155,3229,SSL EV,4,3220
+156,3232,SSL OV,4,3220
+157,3235,MKE SSL Certificates,4,3220
+158,3238,SSL Certificates,4,4931
+159,3241,STACK,2,3046
+160,3244,Free STACK,3,3241
+161,3247,Free STACK,4,4874
+162,3250,Paid STACK,3,3241
+163,3253,10 TB,4,3250
+164,3256,1000 GB,4,3250
+165,3259,10000 GB,4,3250
+166,3262,11000 GB,4,3250
+167,3265,1250 GB,4,3250
+168,3268,2 TB,4,3250
+169,3271,2000 GB,4,3250
+170,3274,250 GB,4,3250
+171,3277,3000 GB,4,3250
+172,3286,Webhosting L,4,3283
+173,3289,Webhosting S,4,3283
+174,3292,Webhosting XL,4,3283
+175,3298,Shared Hosting,5,3295
+176,3301,Shared Hosting,6,3298
+177,3304,Non XLS,3,3280
+178,3307,Add-ons,4,3322
+179,3310,ez,4,3304
+180,3313,KDISS,4,3304
+181,3316,MKE,4,3304
+182,3319,Webhosting,4,4925
+183,3322,XLS,3,3280
+184,3325,Linux,4,3322
+185,3328,Windows,4,3322
+186,3331,E-mail Add-ons,2,3046
+187,3334,Antispam,3,3331
+188,3337,Antispam,4,3334
+189,3340,MKE Antispam,4,3334
+190,3346,Subaccount,3,4934
+191,3349,Extra HD space,3,4934
+192,3352,PHP/MySQL,3,4934
+193,3355,Back-up Online,2,3046
+194,3358,License,3,3355
+195,3361,VMware licentie,4,3358
+196,3367,Back-up License,6,4585
+197,3370,PC Back-up Online,3,3355
+198,3373,Back-ups,4,4826
+199,3376,PC Back-up,6,4591
+200,3391,SLA Carefree,3,3388
+201,3394,SLA Carefree,4,3391
+202,3397,SLA Enhanced,3,3388
+203,3400,SLA Enhanced,4,3397
+204,3403,Paid colocation,2,3385
+205,3409,?,4,4679
+206,3415,Extra Rack,3,3403
+207,3418,Full Private Rack,3,3403
+208,3421,Advanced,4,4670
+209,3424,Professional,4,4670
+210,3427,Ultimate,4,4670
+211,3436,Free colocation,2,3385
+212,3439,Employee Colocation,3,3436
+213,3445,In-house Cabling,3,3442
+214,3448,In-house Cabling,4,3445
+215,3451,In-house Cabling,5,3448
+216,3454,In-house Cabling,6,3451
+217,3460,Add IP range,3,4970
+218,3463,Add IP range,4,3460
+219,3469,Fiber,4,3466
+220,3472,UTP,4,3466
+221,3475,Extra IP address,3,4970
+222,3478,Extra IP address,4,3475
+223,3484,Storage Container,4,4673
+224,3490,Extra Power Port,4,3487
+225,3493,Powerbar,4,3487
+226,3496,Upgrade Extra/Redundant Power Feed,4,3487
+227,3499,Upgrade Power,4,3487
+228,3502,Upgrade Power,5,3499
+229,3505,Power Upgrade,6,3502
+230,3508,Upgrade Redundant Power Reservation,4,3487
+231,3511,Power,4,4973
+232,3517,Extra Switch Port,4,3514
+233,3520,Upgrade Bandwidth,3,4970
+234,3523,Upgrade Bandwidth,4,3520
+235,3526,Upgrade Data Traffic,3,4970
+236,3529,Upgrade Data Traffic,4,3526
+237,3532,IP Address,3,3457
+238,3535,IP Address,4,3532
+239,3538,MKE IP,4,3532
+240,3541,Rack Space,3,4970
+241,3544,Rack Space,4,3541
+242,3553,Dedicated Servers,4,3550
+243,3556,Datacenter EcoRacks Colocation,4,4676
+244,3559,Datacenter EcoRacks Colocation,5,3556
+245,3562,Datacenter EcoRacks Colocation,6,3559
+246,3565,Shared Rack Space,3,3547
+247,3568,Shared Rack Space,4,3565
+248,3571,Shared Rack Space,5,3568
+249,3574,Shared Rack Space,6,3571
+250,3577,?,2,3595
+251,3580,Dedicated Server,4,4730
+252,3583,Extra memory,4,4661
+253,3586,Hard Disk Drive,4,4661
+254,3589,Non Existing Colocation,4,4661
+255,3592,Redundant connection,4,4661
+256,3595,?,1,0
+257,3601,Back-up Services,2,4961
+258,3604,Back-up Services,3,3601
+259,3607,Back-up Services,4,3604
+260,3610,Server management,2,3598
+261,3613,Human resources,3,4964
+262,3616,Human resources,4,3613
+263,3619,Service Level,3,4964
+264,3622,Service Level,4,3619
+265,3625,Services,3,4964
+266,3628,Services,4,3625
+267,3631,Streaming services,2,4961
+268,3634,Traffic,3,3631
+269,3637,VPS Server Traffic,4,3634
+270,3646,ADSL,3,5003
+271,3652,Connectivity Managed Services,3,4612
+272,3655,Managed Networking,4,3652
+273,3658,Anti-DDoS,5,3655
+274,3661,Anti-DDoS Access,6,3658
+275,3664,Anti-DDoS DC,6,3658
+276,3667,Cloud Connect,5,3655
+277,3670,Cloud Connect Access,6,3667
+278,3673,Cloud Connect Port,6,3667
+279,3676,Fiber Care,5,3655
+280,3679,Fiber Care Configuration,6,3676
+281,3682,Fiber Care Management,6,3676
+282,3685,Managed Hardware,5,3655
+283,3688,Managed Firewall,6,3685
+284,3691,Managed Router,6,3685
+285,3694,Managed Switch,6,3685
+286,3697,Private Networks,5,3655
+287,3700,Alarm-over-IP VPN,6,3697
+288,3703,Ethernet VPN,6,3697
+289,3706,IP VPN,6,3697
+290,3709,IPSEC VPN,6,3697
+291,3712,Various,5,3655
+292,3715,Physical Ethernet Port,6,3712
+293,3718,Service Level Agreement,4,3652
+294,3721,Service Level Agreement,5,3718
+295,3724,SLA 24/7,6,3721
+296,3727,Undefined SLA,6,3721
+297,3736,Basic Internet Access,5,3733
+298,3739,BRE Basic Internet Access,6,3736
+299,3742,Breedband Tilburg Basic Internet Access,6,3736
+300,3745,Brofiber Basic Internet Access,6,3736
+301,3748,Datacenter IT-Lockers Basic Internet Access,6,3736
+302,3751,Eurofiber Basic Internet Access,6,3736
+303,3754,FiberRevolution Basic Internet Access,6,3736
+304,3757,Fore Freedom Basic Internet Access,6,3736
+305,3760,Glasnet Veghel Basic Internet Access,6,3736
+306,3763,Glasvezel Cranendonck Basic Internet Access,6,3736
+307,3766,Glasvezel De Copenvezel Basic Internet Access,6,3736
+308,3769,GVE Basic Internet Access,6,3736
+309,3772,GVE Strijp TR Zakelijk Alles-in-een Basis Internet Access,6,3736
+310,3775,HSLnet Basic Internet Access,6,3736
+311,3778,HTC Basic Internet Access,6,3736
+312,3781,KPN Basic Internet Access,6,3736
+313,3784,NDIX Basic Internet Access,6,3736
+314,3787,Parkned Basic Internet Access,6,3736
+315,3790,Rekam Basic Internet Access,6,3736
+316,3793,R-IX Basic Internet Access,6,3736
+317,3796,SPIN Boxtel Basic Internet Access,6,3736
+318,3799,Tele2 Basic Internet Access,6,3736
+319,3802,Undefined Basic Internet Access,6,3736
+320,3805,Undefined Zakelijk Alles-in-een Basic Internet Access,6,3736
+321,3808,Vught Basic Internet Access,6,3736
+322,3811,Datacenter Internet Access,5,3733
+323,3814,Datacenter Brabant Internet Access Upgrade,6,3811
+324,3817,Datacenter EcoRacks Internet Access,6,3811
+325,3820,Datacenter Ecoracks Internet Access Upgrade,6,3811
+326,3823,Datacenter IT-Lockers Internet Access,6,3811
+327,3826,Dataplace Brabant Internet Access,6,3811
+328,3829,Dataplace Utrecht Internet Access,6,3811
+329,3832,Undefined Internet Access Upgrade,6,3811
+330,3835,Dual-Play Access,5,3733
+331,3838,BoekelNet Combo Smart Pack,6,3835
+332,3841,Glasvezel Cranendonck Combo Smart Pack,6,3835
+333,3844,Internet & Bellen,6,3835
+334,3847,Undefined Combo Smart Pack,6,3835
+335,3850,Economy Internet Access,5,3733
+336,3853,BoekelNet Economy Internet Access,6,3850
+337,3856,Eurofiber Economy Internet Access,6,3850
+338,3859,FiberPort Office Economy Internet Access,6,3850
+339,3862,Fore Freedom Economy Internet Access,6,3850
+340,3865,Glasdonk Boxtel Economy Internet Access,6,3850
+341,3868,Glasnet Heusden Economy Internet Access,6,3850
+342,3871,Glasnet Veghel Economy Access,6,3850
+343,3874,GVE Economy Internet Access,6,3850
+344,3877,HSLnet Economy Internet Access,6,3850
+345,3880,Parkned Economy Internet Access,6,3850
+346,3883,Rekam Economy Internet Access,6,3850
+347,3886,SPIN Boxtel Economy Internet Access,6,3850
+348,3889,Undefined Economy Internet Access,6,3850
+349,3892,Extra Internet Access,5,3733
+350,3895,GVE Strijp TR Zakelijk Alles-in-een Extra Internet Access,6,3892
+351,3898,Undefined Zakelijk Alles-in-een Extra Internet Access,6,3892
+352,3901,Lite Internet Access,5,3733
+353,3904,BRE Lite Internet Access,6,3901
+354,3907,Breedband Tilburg Lite Internet Access,6,3901
+355,3910,Datacenter IT-Lockers Lite Internet Access,6,3901
+356,3913,E-Fiber Lite Internet Access,6,3901
+357,3916,Eurofiber Accor Lite Internet Access,6,3901
+358,3919,Eurofiber Lite Internet Access,6,3901
+359,3922,FiberRevolution Lite Internet Access,6,3901
+360,3925,Fore Freedom Lite Internet Access,6,3901
+361,3928,Glasnet Heusden Lite Internet Access,6,3901
+362,3931,Glasnet Veghel Lite Internet Access,6,3901
+363,3934,Glasvezel Cranendonck Lite Internet Access,6,3901
+364,3937,Glasvezel De Copenvezel Lite Internet Access,6,3901
+365,3940,Glasvezel Veldhoven Lite Internet Access,6,3901
+366,3943,GVE Lite Internet Access,6,3901
+367,3946,HSLnet Lite Internet Access,6,3901
+368,3949,HTC Lite Internet Access,6,3901
+369,3952,KBP Lite Internet Access,6,3901
+370,3955,KPN Lite Internet Access,6,3901
+371,3958,NDIX Lite Internet Access,6,3901
+372,3961,Parkned Lite Internet Access,6,3901
+373,3964,Rekam Lite Internet Access,6,3901
+374,3967,SPIN Boxtel Lite Internet Access,6,3901
+375,3970,Tele2 Lite Internet Access,6,3901
+376,3973,Trent Lite Internet Access,6,3901
+377,3976,Undefined Lite Internet Access,6,3901
+378,3979,Vught Lite Internet Access,6,3901
+379,3982,Max Internet Access,5,3733
+380,3985,BBT Nuenen Max Internet Access,6,3982
+381,3988,BRE Max Internet Access,6,3982
+382,3991,Centric Max Internet Access,6,3982
+383,3994,Eurofiber Max Internet Access,6,3982
+384,3997,Fore Freedom Max Internet Access,6,3982
+385,4000,Glasnet Heusden Max Internet Access,6,3982
+386,4003,Glasnet Veghel Max Internet Access,6,3982
+387,4006,HSLnet Max Internet Access,6,3982
+388,4009,HTC Max Internet Access,6,3982
+389,4012,KPN Max Internet Access,6,3982
+390,4015,NDIX Max Internet Access,6,3982
+391,4018,Parkned Max Internet Access,6,3982
+392,4021,Rekam Max Internet Access,6,3982
+393,4024,Trent Max Internet Access,6,3982
+394,4027,Undefined Max Internet Access,6,3982
+395,4030,Office Internet Access,5,3733
+396,4033,FiberPort Office Internet Access,6,4030
+397,4036,GVE Office Internet Access,6,4030
+398,4039,Plus Internet Access,5,3733
+399,4042,BRE Plus Internet Access,6,4039
+400,4045,Breedband Tilburg Plus Internet Access,6,4039
+401,4048,Eurofiber Plus Internet Access,6,4039
+402,4051,FiberRevolution Plus Internet Access,6,4039
+403,4054,Fore Freedom Plus Internet Access,6,4039
+404,4057,Glasnet Heusden Plus Internet Access,6,4039
+405,4060,Glasnet Veghel Plus Internet Access,6,4039
+406,4063,Glasvezel Veldhoven Plus Internet Access,6,4039
+407,4066,GVE Plus Internet Access,6,4039
+408,4069,HSLnet Plus Internet Access,6,4039
+409,4072,HTC Plus Internet Access,6,4039
+410,4075,KBP Plus Internet Access,6,4039
+411,4078,KPN Plus Internet Access,6,4039
+412,4081,NDIX Plus Internet Access,6,4039
+413,4084,Parkned Plus Internet Access,6,4039
+414,4087,Rekam Plus Internet Access,6,4039
+415,4090,SPIN Boxtel Plus Internet Access,6,4039
+416,4093,Tele2 Plus Internet Access,6,4039
+417,4096,Trent Plus Internet Access,6,4039
+418,4099,Undefined Plus Internet Access,6,4039
+419,4102,Undefined Zakelijk Alles-in-een Plus Internet Access,6,4039
+420,4105,Ziggo Plus Internet Access,6,4039
+421,4108,Start Internet Access,5,3733
+422,4111,GVE Strijp TR Zakelijk Alles-in-een Start Internet Access,6,4108
+423,4114,Undefined Zakelijk Alles-in-een Start Internet Access,6,4108
+424,4117,Undefined Internet Access,5,3733
+425,4120,De Copenvezel Zakelijk Alles-in-een Internet Access,6,4117
+426,4123,Undefined Internet Access,6,4117
+427,4126,Internet Services Add-ons,4,3730
+428,4129,IP Addresses,5,4126
+429,4132,IPv4 Addresses,6,4129
+430,4135,Public IP Routing,5,4126
+431,4138,Public IP Routing,6,4135
+432,4141,OTT Services,3,5003
+433,4147,IP-TV Services,5,4144
+434,4150,IP-TV Add-ons,6,4147
+435,4153,IP-TV Hardware,6,4147
+436,4156,IP-TV Subscription,6,4147
+437,4159,Payment Services,5,4144
+438,4162,PIN-over-IP,6,4159
+439,4165,Software Licenses,3,4612
+440,4168,Software Licenses,4,4165
+441,4171,Software Licenses,5,4168
+442,4174,Software Licenses,6,4171
+443,4177,Undefined Services,3,4612
+444,4180,Undefined Services,4,4177
+445,4183,Undefined Services,5,4180
+446,4186,Undefined Services,6,4183
+447,4189,Hardware,2,3640
+448,4192,Hardware,4,4673
+449,4195,Non-Managed Hardware,5,4192
+450,4198,Media Converters,6,4195
+451,4201,Routers,6,4195
+452,4204,Various Hardware,6,4195
+453,4210,DSL,3,4207
+454,4213,DSL Ethernet Virtual Circuit (EVC),4,4210
+455,4216,DSL National EVC,5,4213
+456,4219,Tele2 DSL EVC,6,4216
+457,4222,DSL Physical Infrastructure,4,4210
+458,4225,DSL International Infrastructure,5,4222
+459,4228,EDPNet DSL,6,4225
+460,4231,DSL National Infrastructure,5,4222
+461,4234,BBNed DSL,6,4231
+462,4237,BBNed DSL (KPN Infra),6,4231
+463,4240,KPN DSL,6,4231
+464,4243,KPN WBA infrastructure,6,4330
+465,4246,Tele2 DSL,6,4231
+466,4249,Tele2 Extended SDSL.bis Infrastructure,6,4231
+467,4252,Undefined DSL,6,4255
+468,4255,DSL Undefined Infrastructure,5,4222
+469,4261,Fiber National EVC,5,4258
+470,4264,Eurofiber EVC,6,4261
+471,4267,KPN WEAS EVC,6,4261
+472,4270,NDIX EVC,6,4261
+473,4273,Tele2 EVC,6,4261
+474,4276,Fiber Regional EVC,5,4258
+475,4279,Rekam EVC,6,4276
+476,4282,Breedband Tilburg EVC,6,4276
+477,4285,Cranendonck EVC,6,4276
+478,4288,De Copenvezel EVC,6,4276
+479,4291,Fore Freedom EVC,6,4276
+480,4294,Glasnet Heusden EVC,6,4276
+481,4297,Glasnet Veghel EVC,6,4276
+482,4300,GVE EVC,6,4276
+483,4303,HSLnet EVC,6,4276
+484,4306,KBP EVC,6,4276
+485,4309,Parkned EVC,6,4276
+486,4312,SPIN Boxtel EVC,6,4276
+487,4315,Fiber Undefined EVC,5,4258
+488,4318,Undefined EVC,6,4378
+489,4321,Physical Infrastructure,4,4682
+490,4324,Dark Fiber,5,4321
+491,4327,Undefined Dark Fiber,6,4324
+492,4330,Fiber National Infrastructure,5,4321
+493,4333,E-Fiber Infrastructure,6,4330
+494,4336,KPN WEAS infrastructure,6,4330
+495,4339,Tele2 infrastructure,6,4330
+496,4342,Fiber Regional Infrastructure,5,4321
+497,4345,Rekam Infrastructure,6,4342
+498,4348,De Copenvezel Infrastructure,6,4342
+499,4351,GVE Infrastructure,6,4342
+500,4354,GVE Strijp TR Infrastructure,6,4342
+501,4357,Fiber Undefined Infrastructure,5,4321
+502,4360,Undefined Infrastructure,6,4369
+503,4363,Fiber & DSL,3,4207
+504,4366,Fiber & DSL Physical Infrastructure,4,4363
+505,4369,Fiber & DSL Undefined Infrastructure,5,4366
+506,4372,Radio,3,4207
+507,4375,Radio Ethernet Virtual Circuit (EVC),4,4372
+508,4378,Radio National EVC,5,4375
+509,4381,Wireless,3,4207
+510,4384,Wireless Mobile,4,4381
+511,4387,Wireless T-Mobile,5,4384
+512,4390,4G,6,4387
+513,4393,Managed,1,0
+514,4399,Managed Server,3,4396
+515,4402,Managed Server,4,4399
+516,4405,Managed Server,5,4402
+517,4408,Server management,6,4405
+518,4411,Telecom,1,0
+519,4414,Telecom Services,2,4411
+520,4417,Telephony,3,4414
+521,4423,Post-paid Subscriptions,5,4420
+522,4426,SIP Trunk,6,4423
+523,4429,VoIP Add-ons,5,4420
+524,4432,Fax-to-Email,6,4429
+525,4435,Phone numbers,6,4429
+526,4441,Signet VPS,4,3025
+527,4474,MKE VPS,3,2935
+528,4513,Legacy,4,4516
+529,4534,Domain Legacy,3,3049
+530,4540,Webhosting Legacy,4,4925
+531,4543,Legacy Webhosting Add-on,3,3343
+532,4555,Colocation Legacy,4,4661
+533,4570,Connectivity Legacy,3,5003
+534,4576,Signet Back-ups,5,2926
+535,4579,E-mail,3,3184
+536,4582,E-mail Addon,3,3343
+537,4585,Back-up License,5,3361
+538,4588,PC Back-up,4,3370
+539,4591,PC Back-up,5,4588
+540,4594,Server Back-ups,4,4621
+541,4597,Server Back-ups,5,4594
+542,4618,Back-ups,5,2755
+543,4621,Server Back-up Online,3,3355
+544,4664,Breedband Tilburt Max Internet Access,6,4039
+545,4676,Semi Private Rack,3,3547
+546,4679,?,3,3577
+547,4685,Domains,1,0
+548,4688,Domain Registrations,2,4685
+549,4691,Domain Services,2,4685
+550,4694,DNS,3,4691
+551,4697,DNS,4,4694
+552,4700,CHOWN,3,4691
+553,4703,Redemption,3,4691
+554,4709,Whitelabel,3,4691
+555,4712,Domain Services,3,4691
+556,4715,Domain Services,4,4712
+557,4718,Hosting,1,0
+558,4721,Webhosting Services,2,4718
+559,4724,Webhosting Services,3,4721
+560,4727,Dedicated Server,2,4718
+561,4730,Dedicated Server,3,4727
+562,4733,Extra HD space,4,3349
+563,4736,Subaccount,4,3346
+564,4739,PHP/MySQL,4,3352
+565,4742,Licenses,2,4937
+566,4745,Other Licenses,3,4742
+567,4748,Sophos,3,4742
+568,4751,Microsoft,3,4742
+569,4754,DirectAdmin,3,4742
+570,4757,Plesk,3,4742
+571,4760,CPanel,3,4742
+572,4763,CPanel,4,4760
+573,4766,Legacy Licenses,3,4742
+574,4769,Internal useVPS,4,3022
+575,4772,Network,2,4937
+576,4775,VPS Firewall,3,4772
+577,4778,VPS Firewall,4,4775
+578,4781,Private Network,3,4772
+579,4784,Private Network,4,4781
+580,4787,HA-IP,3,4772
+581,4790,HA-IP,4,4787
+582,4793,Storage,2,4937
+583,4796,ObjectStore,3,4793
+584,4799,ObjectStore,4,4796
+585,4802,Snapshots,3,4793
+586,4805,Snapshots,4,4802
+587,4808,Big Storage,3,4793
+588,4811,Big Storage,4,4808
+589,4814,VPS Add-ons,4,4958
+590,4820,OpenStack,4,3013
+591,4823,Back-ups,2,4937
+592,4826,Back-ups,3,4823
+593,4829,Managed Networking,2,4961
+594,4832,Private Networks,3,4829
+595,4835,Private Networks,4,4832
+596,4838,Managed Hardware,3,4829
+597,4841,Managed Hardware,4,4838
+598,4844,Switch,4,4976
+599,4847,Extra Fiber / UTP,4,4979
+600,4850,Colocation,4,4985
+601,4853,Colocation Services,3,4988
+602,4856,Colocation Services,4,4853
+603,4859,SLA,3,4991
+604,4862,SLA,4,4859
+605,4865,Cloud Applications,1,0
+606,4868,E-mail Services,2,4865
+607,4871,Filehosting,2,4865
+608,4874,STACK,3,4871
+609,4877,Paid STACK,4,4874
+610,4880,Hosted Exchange,2,4865
+611,4883,Hosted Exchange,3,4880
+612,4886,Hosted Exchange,4,4883
+613,4889,Connectivity Legacy,4,4570
+614,4892,ADSL,4,3646
+615,4895,Other,1,0
+616,4898,Other,2,4895
+617,4901,Other,3,4898
+618,4904,Other,4,4901
+619,4907,Domain registration others,4,3052
+620,4910,Domains .nl,4,3139
+621,4913,Domains .eu,4,3127
+622,4916,Domains .be,4,3103
+623,4919,Domains .com,4,3115
+624,4922,Webhosting,2,4718
+625,4925,Webhosting,3,4922
+626,4928,Webhosting Services,4,4724
+627,4931,SSL Certificates,3,3217
+628,4934,Webhosting Add-ons,2,4718
+629,4937,Cloud Computing,1,0
+630,4940,Microsoft,4,4751
+631,4943,Legacy Licenses,4,4766
+632,4946,VPS,2,4937
+633,4949,VPS,4,3022
+634,4952,VPS Overusage,4,3022
+635,4955,VPS Add-ons,2,4937
+636,4958,VPS Add-ons,3,4955
+637,4961,Managed Services,1,0
+638,4964,Managed Server,2,4961
+639,4967,Colocation,1,0
+640,4970,Colocation Add-ons,2,4967
+641,4973,Power,3,4970
+642,4976,Switch,3,4970
+643,4979,Extra Fiber / UTP,3,4970
+644,4982,Colocation,2,4967
+645,4985,Colocation,3,4982
+646,4988,Colocation Services,2,4967
+647,4991,SLA,2,4967
+648,4994,E-mail Services,3,4868
+649,4997,E-mail Services,4,4994
+650,5000,Connectivity,1,0
+651,5003,Connectivity Services,2,5000
+652,5006,Internet Services,3,5003
+653,5009,Internet Access,4,5006
+654,5012,OTT Services,4,4141
+655,5015,Infrastructure,2,5000
+656,5018,Fiber,3,5015
+657,5021,Fiber Ethernet Virtual Circuit (EVC),4,5018
+658,5024,Subscriptions,4,4417
+659,5032,Storage,3,4793
+660,5035,Storage,4,5032
+661,5041,Managed Services,2,4961
+662,5044,Managed Services,3,5041
+663,5047,Managed Services,4,5044
+664,5054,Trustee service,4,5057
+665,5057,Trustee service,3,4691
+666,5063,Managed Hosting,2,4961
+667,5066,Managed Ecommerce,3,5063
+668,5069,Excellence Hosting,4,5066
+669,5072,Professional Hosting,4,5066
+670,5075,Managed Hosting,3,5063
+671,5078,Managed Hosting,4,5075
+672,5081,Managed Hosting Addon,3,5063
+673,5084,Managed Hosting Addon,4,5081
+674,5087,Managed Ecommerce,4,5066
+675,5090,Managed Hosting SLA,4,5081
+676,5096,Legacy Managed Hosting,3,5063
+677,5099,Legacy Managed Hosting,4,5096
