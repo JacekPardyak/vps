@@ -49,10 +49,18 @@ data <- (layer_2 %>% st_sample(size = 1000) %>%
   bind_rows(layer_2 %>% st_sample(size = 1000) %>%
               st_sfc() %>% st_sf(geometry = .) %>% mutate(Facet = 2)  %>% mutate(Colour = "#cc1100") )
 
-data %>% ggplot() +
+anim <- data %>% ggplot() +
   aes(colour = Colour, fill = Colour) +
   geom_sf(aes(group = 1L)) +
   scale_colour_identity() +
   scale_fill_identity() +
   theme_void() +
   transition_states(Facet, wrap = FALSE) #+  shadow_mark() 
+
+movie <- animate(anim, duration = 10, fps = 10, 
+                 options(gganimate.dev_args = 
+                           list(width = 1080, height = 1920)), #
+                 renderer = av_renderer(audio = "./anim/Blue Dot Sessions - Tangle.mp3"))
+
+anim_save("./anim//output.mp4", movie)
+
