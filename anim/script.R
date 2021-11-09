@@ -62,7 +62,9 @@ data.cloud
 
 data.cloud  <- st_sfc() %>% st_sf(geometry = .)
 for (i in c(1:9)) {
-  tmp <-get(paste("Layer", i, sep = ".")) %>% st_sample(size = 1000) %>%
+  #i = 1
+  area <- get(paste("Layer", i, sep = ".")) %>% st_area() %>% round()
+  tmp <- get(paste("Layer", i, sep = ".")) %>% st_sample(size = area) %>%
     st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = paste("Layer", i, sep = "."))
   data.cloud <- data.cloud %>% bind_rows(tmp) 
 }
@@ -76,7 +78,8 @@ anim <- data.cloud %>% ggplot() +
   scale_colour_identity() +
   scale_fill_identity() +
   theme_void() +
-  transition_states(Layer, wrap = FALSE) #+  shadow_mark() 
+  transition_states(Layer, wrap = FALSE) +
+  shadow_mark() 
 
 movie <- animate(anim, duration = 35, fps = 10, 
                  options(gganimate.dev_args = 
