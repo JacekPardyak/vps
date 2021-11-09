@@ -2,62 +2,83 @@ library(tidyverse)
 library(sf)
 library(gganimate)
 
-data <- st_read("https://raw.githubusercontent.com/JacekPardyak/vps/master/data/logo/logo.dxf")
+data <- st_read("https://raw.githubusercontent.com/JacekPardyak/vps/master/anim/logo/logo.dxf") %>%
+  mutate(Layer = make.names(Layer))
 data
 layers <- data %>% data.frame() %>% distinct(Layer) %>% pull()
 layers
 
-# Layer 1
-layer <- layers[1]
-layer_1 <- data %>% filter(Layer == layer) %>% st_union() %>% st_polygonize() %>% first()  %>% first()
-layer_1 <- layer_1  %>%
-  st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = layer)
-layer_1
-layer_1 %>% plot()
+for (i in c(1, 4, 5, 7, 8)) {
+  layer <- paste("Layer", i, sep = ".")
+  assign(layer, data %>% filter(Layer == layer) %>% st_union() %>% 
+    st_polygonize() %>% first()  %>% first() %>%
+    st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = layer))
+}
 
-# Layer 2
-layer_in  <- layers[2]
-layer_out <- layers[3]
-
-layer_2_in  <- data %>% filter(Layer == layer_in) %>% st_union() %>% st_polygonize() 
-layer_2_out <- data %>% filter(Layer == layer_out) %>% st_union() %>% st_polygonize() 
-
-layer_2 <- st_difference(layer_2_out, layer_2_in)
-layer_2 <- layer_2  %>%
-  st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = layer)
-layer_2 %>% plot()
-
-layer_2
-
-# Layer 3
-layer = "Layer 3"
-layer_in  <- layers[4]
-layer_out <- layers[5]
-
-layer_in  <- data %>% filter(Layer == layer_in) %>% st_union() %>% st_polygonize() 
-layer_out <- data %>% filter(Layer == layer_out) %>% st_union() %>% st_polygonize() 
-
-layer_3 <- st_difference(layer_out, layer_in)
-layer_3 <- layer_3  %>%
-  st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = layer)
-layer_3 %>% plot()
+Layer.1 %>% plot()
+Layer.4 %>% plot()
+Layer.5 %>% plot()
+Layer.7 %>% plot()
+Layer.8 %>% plot()
 
 
-## data
-data <- (layer_2 %>% st_sample(size = 1000) %>%
-           st_sfc() %>% st_sf(geometry = .) %>% mutate(Facet = 1) %>% mutate(Colour = "#d51125") ) %>% 
-  bind_rows(layer_2 %>% st_sample(size = 1000) %>%
-              st_sfc() %>% st_sf(geometry = .) %>% mutate(Facet = 2)  %>% mutate(Colour = "#cc1100") )
+for (i in c(2, 3, 6, 9)) {
+  layer <- paste("Layer", i, sep = ".")
+  for (suf in c("in", "out")) {
+    assign(paste("tmp", suf, sep = "."),  
+           data %>% filter(Layer == paste(layer, suf, sep = ".")) %>% 
+             st_union() %>% st_polygonize() )
+  }
+  assign(layer, st_difference(tmp.out, tmp.in)  %>%
+           st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = layer))
+}
 
-anim <- data %>% ggplot() +
+Layer.2 %>% plot()
+Layer.3 %>% plot()
+Layer.6 %>% plot()
+Layer.9 %>% plot()
+
+data <- st_sfc() %>% st_sf(geometry = .)
+
+for (i in c(1:9)) {
+  data <- data %>% bind_rows(get(paste("Layer", i, sep = "."))) 
+}
+
+data <- data %>% mutate(Colour = if_else(Layer == "Layer.5", "#17ace3ff", "#1c3f6eff"))
+
+data %>% ggplot() +
   aes(colour = Colour, fill = Colour) +
   geom_sf(aes(group = 1L)) +
   scale_colour_identity() +
   scale_fill_identity() +
   theme_void() +
-  transition_states(Facet, wrap = FALSE) #+  shadow_mark() 
+  transition_states(Layer, wrap = FALSE) #+  shadow_mark() 
 
-movie <- animate(anim, duration = 10, fps = 10, 
+
+data.cloud <- data %>% mutate(geometry = geometry %>% st_sample(size = 1000))  %>%
+  st_sfc() %>% st_sf(geometry = .)
+data.cloud
+
+
+data.cloud  <- st_sfc() %>% st_sf(geometry = .)
+for (i in c(1:9)) {
+  tmp <-get(paste("Layer", i, sep = ".")) %>% st_sample(size = 1000) %>%
+    st_sfc() %>% st_sf(geometry = .) %>% mutate(Layer = paste("Layer", i, sep = "."))
+  data.cloud <- data.cloud %>% bind_rows(tmp) 
+}
+
+data.cloud <- data.cloud %>% mutate(Colour = if_else(Layer == "Layer.5", "#17ace3ff", "#1c3f6eff"))
+
+
+anim <- data.cloud %>% ggplot() +
+  aes(colour = Colour, fill = Colour) +
+  geom_sf(aes(group = 1L)) +
+  scale_colour_identity() +
+  scale_fill_identity() +
+  theme_void() +
+  transition_states(Layer, wrap = FALSE) #+  shadow_mark() 
+
+movie <- animate(anim, duration = 35, fps = 10, 
                  options(gganimate.dev_args = 
                            list(width = 1080, height = 1920)), #
                  renderer = av_renderer(audio = "./anim/Blue Dot Sessions - Tangle.mp3"))

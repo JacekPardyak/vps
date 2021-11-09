@@ -143,3 +143,5 @@ for(i in 1:12) {
   fractal <- iterate(fractal, ifun=tree, angle=29, randomness=9)
   drawObject(fractal, lwd=lwd)
 }
+
+# Reference: https://rpubs.com/mstefan-rpubs/fractals
