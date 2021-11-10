@@ -1,7 +1,8 @@
 library(tidyverse)
 library(sf)
 library(gganimate)
-
+install.packages('av')
+install.packages('transformr')
 data <- st_read("https://raw.githubusercontent.com/JacekPardyak/vps/master/anim/logo/logo.dxf") %>%
   mutate(Layer = make.names(Layer))
 data
@@ -55,11 +56,6 @@ data %>% ggplot() +
   transition_states(Layer, wrap = FALSE) #+  shadow_mark() 
 
 
-data.cloud <- data %>% mutate(geometry = geometry %>% st_sample(size = 1000))  %>%
-  st_sfc() %>% st_sf(geometry = .)
-data.cloud
-
-
 data.cloud  <- st_sfc() %>% st_sf(geometry = .)
 for (i in c(1:9)) {
   #i = 1
@@ -72,7 +68,8 @@ for (i in c(1:9)) {
 data.cloud <- data.cloud %>% mutate(Colour = if_else(Layer == "Layer.5", "#17ace3ff", "#1c3f6eff"))
 
 
-anim <- data.cloud %>% ggplot() +
+anim <- 
+  data.cloud %>% ggplot() +
   aes(colour = Colour, fill = Colour) +
   geom_sf(aes(group = 1L)) +
   scale_colour_identity() +
@@ -87,4 +84,11 @@ movie <- animate(anim, duration = 35, fps = 10,
                  renderer = av_renderer(audio = "./anim/Blue Dot Sessions - Tangle.mp3"))
 
 anim_save("./anim//output.mp4", movie)
+
+library(remotes)
+remotes::install_github("gadenbuie/tiktokrmd")
+
+library(tiktokrmd)
+
+
 
