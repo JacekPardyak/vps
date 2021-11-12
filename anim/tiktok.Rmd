@@ -1,5 +1,5 @@
 ---
-title: "tiktok"
+title: "TikTok"
 author: "JG Pardyak"
 date: "11/10/2021"
 output: html_document
@@ -11,9 +11,23 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Team.Blue.One
 
+R packages used for the animation: 
+
+```{r, eval=FALSE}
+if (!require("units")) install.packages("units")
+if (!require("geojsonio")) install.packages("geojsonio")
+if (!require("sf")) install.packages("sf")
+if (!require("gganimate")) install.packages("gganimate")
+if (!require("transformr")) install.packages("transformr")
+if (!require("plotly")) install.packages("plotly")
+if (!require("av")) install.packages("av")
+library(tidyverse)
+```
+
+
 ```{r tiktok, echo=FALSE}
 library(tiktokrmd)
-tt_url <- "https://www.tiktok.com/@pl.in.nl/video/7028849407827266822"
+tt_url <- "https://www.tiktok.com/@pl.in.nl/video/7028894954953002246"
 tt <- tiktok_embed(tt_url)
 tt
 ```
