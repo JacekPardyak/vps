@@ -10,7 +10,9 @@ shinyUI(fluidPage(
                     "Plant 0",
                     "Plant 1",
                     "Plant 2",
-                    "Plant 5"),
+                    "Plant 5",
+                    "Plant 6",
+                    "Koch snowflake"),
                   selected = ""),
       
       conditionalPanel(
@@ -20,6 +22,10 @@ shinyUI(fluidPage(
       conditionalPanel(
         condition = "input.cur != \"\"",
         uiOutput("Angle")),
+      
+      conditionalPanel(
+        condition = "input.cur != \"\"",
+        uiOutput("Rules")),
       
       conditionalPanel(
         condition = "input.cur != \"\"",

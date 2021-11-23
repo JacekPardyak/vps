@@ -6,32 +6,56 @@ library(ggplot2)
 library(rlist)
 
 shinyServer(function(input, output) {
-  
-  curves=list(
-    list(name="Plant 0",
+  curves = list(
+    list(
+      name = "Plant 0",
+      axiom = "F",
+      rules = list("F" = "F[+F]F[-F]F"),
+      angle = 25.7,
+      depth = 5,
+      alfa0 = 90
+    ),
+    list(
+      name = "Plant 1",
+      axiom = "F",
+      rules = list("F" = "FF-[-F+F+F]+[+F-F-F]"),
+      angle = 22.5,
+      depth = 4,
+      alfa0 = 90
+    ),
+    list(
+      name = "Plant 2",
+      axiom = "X",
+      rules = list("X" = "F[+X][-X]FX", "F" = "FF"),
+      angle = 25.7,
+      depth = 7,
+      alfa0 = 90
+    ),
+    list(
+      name = "Plant 5",
+      axiom = "F",
+      rules = list("F" = "F[+F]F[-F]F"),
+      angle = 25.7,
+      depth = 5,
+      alfa0 = 90
+    ),
+    list(
+      name = "Plant 6",
+      axiom = "X",
+      rules = list("X" = "F−[[X]+X]+F[+FX]−X",
+                   "F" = "FF"),
+      angle = 25.7,
+      depth = 5,
+      alfa0 = 90
+    ),
+    list(name="Koch snowflake",
          axiom="F",
-         rules=list("F"="F[+F]F[-F]F"),
-         angle=25.7,
-         depth=5,
-         alfa0=90),
-    list(name="Plant 1",
-         axiom="F",
-         rules=list("F"="FF-[-F+F+F]+[+F-F-F]"),
-         angle=22.5,
-         depth=4,
-         alfa0=90),
-    list(name="Plant 2",
-         axiom="X",
-          rules=list("X"="F[+X][-X]FX", "F"="FF"),
-          angle=25.7,
-         depth=7,
-         alfa0=90),
-    list(name = "Plant 5",
-    axiom="F",
-    rules=list("F"="F[+F]F[-F]F"),
-    angle=25.7,
-    depth=5,
-    alfa0=90))
+         rules=list("F"="F+F--F+F"),
+         angle=60,
+         n=4,
+         alfa0=180)
+  )
+
 
     
   output$Iterations <- renderUI({ 
@@ -48,11 +72,18 @@ shinyServer(function(input, output) {
   numericInput("ang", "Angle:", angle, min = 0, max = 360)
   })
   
+  output$Rules <- renderUI({ 
+    curve=list.filter(curves, name==input$cur)
+    rules=list.select(curve, rules) %>% unlist
+    textInput("rul", "Rules:", rules)
+  })
+  
   data <- eventReactive(
     input$go, {
     curve = list.filter(curves, name==input$cur)
     axiom = list.select(curve, axiom) %>% unlist
    rules = list.select(curve, rules)[[1]]$rules
+   #rules = input$rul
   alfa0 = list.select(curve, alfa0) %>% unlist
   
   for (i in 1:input$ite) axiom=gsubfn(".", rules, axiom)

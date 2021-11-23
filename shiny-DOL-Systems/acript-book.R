@@ -152,3 +152,10 @@ points %>% select(c("x", "y")) %>% as.matrix() %>% list() %>%
   geom_sf(aes(group = 1L))  +
   theme_void() 
 
+## tests
+
+axiom = "X"
+rules = list("X" = "F−[[X]+X]+F[+FX]−X",
+               "F" = "FF")
+
+axiom = gsubfn(".", rules, axiom)
