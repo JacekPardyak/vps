@@ -1,6 +1,7 @@
 # R -e "shiny::runApp('./mwe')"
 # https://www.linode.com/docs/guides/how-to-deploy-rshiny-server-on-ubuntu-and-debian/
-
+# https://linuxize.com/post/how-to-install-r-on-debian-9/
+# https://cran.r-project.org/bin/linux/debian/
 library(tidyverse)
 
 df <- read_csv(I(
