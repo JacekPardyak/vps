@@ -91,6 +91,7 @@ while (x > xmin - 1) {
     # Draw paddle
     lines(c(0, 0), c(ypaddle - (psize / 2), ypaddle + (psize / 2)), type = "l", lwd = 8, col = "white")
 }
+
 beep(8)
 text(15,15, "GAME OVER", cex=5, col = "white")
 s <- ifelse(score == 1, "", "s")
