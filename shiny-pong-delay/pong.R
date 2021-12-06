@@ -1,19 +1,5 @@
 # draw points
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Simulating the Legendary Pong Game in R
 
 ## Sound library
@@ -38,20 +24,56 @@ ymin <- 0.5
 ymax <- 29.4
 
 ## initial position
+
+set.seed(1234)
 x <- sample(5:25, 1)
 y <- sample(5:25, 1)
 points(x, y, pch = 15, col = "white", cex = 2)
 
-## Paddle control
-psize <- 4
-ypaddle <- y
-
-## Set direction
-dx <- runif(1, .5, 1)
-dy <- runif(1, .5, 1)
-
 ## Game play
-while (x > xmin - 1) {
+#while (x > xmin - 1) {
+for (i in c(1:100)) {
+  dx <- runif(1, .5, 1)
+  dy <- runif(1, .5, 1)
+  x <- x + dx
+  y <- y + dy
+  
+  # Collision detection
+  if (x > xmax) {
+    dx <- -dx
+  }
+
+  
+  if (y < ymin | y > ymax) {
+    dy <- -dy 
+    sound <- 10
+  }
+  
+  
+
+  
+  
+  points(x, y, pch = 15, col = "white", cex = 2)
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     sound <- 0 # Silence
     Sys.sleep(.05) # Pause screen
     points(x, y, pch = 15, col = "black", cex = 2) # Erase ball
@@ -91,7 +113,6 @@ while (x > xmin - 1) {
     # Draw paddle
     lines(c(0, 0), c(ypaddle - (psize / 2), ypaddle + (psize / 2)), type = "l", lwd = 8, col = "white")
 }
-
 beep(8)
 text(15,15, "GAME OVER", cex=5, col = "white")
 s <- ifelse(score == 1, "", "s")

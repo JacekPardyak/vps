@@ -19,7 +19,10 @@ shinyUI(fluidPage(
                         min = 0,
                         max = WIDTH - SIZE,
                         value = WIDTH/2),
-            verbatimTextOutput("info")
+            verbatimTextOutput("info"),
+            useShinyjs(),
+            p(id = "text", "This text will disappear after 3 seconds"),
+            actionButton("close", "Close the app in half a second")
         )
     )
 ))

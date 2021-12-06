@@ -1,34 +1,42 @@
 # Define server logic required to draw a scene
 
 ball <- reactiveValues()
-move <- reactiveValues()
 
 # Assign values ball and move
 ball$x <- 280
 ball$y <- 150
 
-move$dx = 1 #(10 + runif(1)) * (-1) ^ sample(c(0, 1), 1)
-move$dy = 1 #(10 + runif(1)) * (-1) ^ sample(c(0, 1), 1)
+ball$dx = 1 #(10 + runif(1)) * (-1) ^ sample(c(0, 1), 1)
+ball$dy = 1 #(10 + runif(1)) * (-1) ^ sample(c(0, 1), 1)
 
-shinyServer(function(input, output, session) {
-
-  observeEvent(input$go, {
-
+shinyServer(function(input, output) {
+ 
+  session <- reactiveValues()
+#  session$timer <- reactiveTimer(Inf)
+  
+  observeEvent(input$go,{
+    session$timer <- reactiveTimer(30)
+    observeEvent(session$timer(),{
+      forward()
+    })
+  })
+  
+  forward <- function(){
       if (ball$x <= 0 | ball$x >= WIDTH){
-        move$dx = -1 * move$dx
-    # beep(1)
+        ball$dx = -1 * ball$dx
+     #beep(1)
         }
-        ball$x = ball$x + move$dx
+        ball$x = ball$x + ball$dx
         ball$x = min(max(ball$x, 0), WIDTH)
     
         if (ball$y <= 0 | ball$y >= HEIGHT){
-          move$dy = -1 * move$dy
-    # beep(1)
+          ball$dy = -1 * ball$dy
+     #beep(1)
         }
-        ball$y = ball$y + move$dy
+        ball$y = ball$y + ball$dy
         ball$y = min(max(ball$y, 0), HEIGHT) 
 
-  })
+  }
     
 
   output$pongPlot <- renderPlot({
@@ -63,7 +71,8 @@ shinyServer(function(input, output, session) {
     })
     
     output$info <- renderText({
-        paste0("x=", ball$x , "\ny=", ball$y, "\ndx=", move$dx , "\ndy=", move$dy  )
+        paste0("x=", ball$x , "\ny=", ball$y,
+               "\ndx=", ball$dx , "\ndy=", ball$dy  )
     })
     
 

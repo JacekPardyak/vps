@@ -8,7 +8,7 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            
+            actionButton("go", "Go"),
         ),
 
         # Show a plot of the generated distribution
@@ -19,16 +19,7 @@ shinyUI(fluidPage(
                         min = 0,
                         max = WIDTH - SIZE,
                         value = WIDTH/2),
-            sliderInput("ball_x",
-                        "Ball position X:",
-                        min = 0,
-                        max = WIDTH,
-                        value = sample(c(1: WIDTH), 1)),
-            sliderInput("ball_y",
-                        "Ball position Y:",
-                        min = 0,
-                        max = HEIGHT,
-                        value = sample(c(1: HEIGHT), 1))
+            verbatimTextOutput("info")
         )
     )
 ))
