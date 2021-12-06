@@ -26,7 +26,7 @@ shinyServer(function(input, output) {
             plot.new()
             plot.window(xlim = c(0, WIDTH), ylim = c(0, HEIGHT))
             
-            # fence
+            # court
             lines(
                 x = c(WIDTH, WIDTH, 0, 0),
                 y = c(0, HEIGHT, HEIGHT, 0),

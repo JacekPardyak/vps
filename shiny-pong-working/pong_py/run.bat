@@ -1,4 +1,4 @@
 ECHO OFF
 ECHO Hello World
-python C:\\Users\\jacek\\OneDrive\\Documents\\vps\\shiny-pong-working\\pong_py\\pyglet_script.py
+C:/Users/Public/r-minicondapython "C:\Users\Jacek Pardyak\Documents\vps\shiny-pong-working\pong_py\noisy.py"
 PAUSE
