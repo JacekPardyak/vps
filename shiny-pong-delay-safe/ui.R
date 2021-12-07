@@ -3,12 +3,12 @@
 shinyUI(fluidPage(
 
     # Application title
-    titlePanel("Pong r-cade game"),
+    titlePanel("Pong R"),
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            actionButton("go", "Play"), actionButton("stop", "Stop"),
+            actionButton("go", "Go"),
         ),
 
         # Show a plot of the generated distribution
