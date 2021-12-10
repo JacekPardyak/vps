@@ -13,7 +13,8 @@ if (!require("sets")) install.packages("sets")
 library(sets)
 if (!require("tictactoe")) install.packages("tictactoe")
 library(tictactoe)
-
+if (!require("plot.matrix")) install.packages("plot.matrix")
+library(plot.matrix)
 HEIGHT = 300
 WIDTH = 300 
 
@@ -61,18 +62,21 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            verbatimTextOutput("info")
+#            sliderInput("bins",
+#                        "Number of bins:",
+#                        min = 1,
+#                        max = 50,
+#                        value = 30)
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
            plotOutput("distPlot", click = "plot_click"),
-           verbatimTextOutput("stats"),
-           tableOutput("game")
+           plotOutput("matrixPlot", click = "matrixClick"),
+           verbatimTextOutput("matrixInfo")
+            
+
         )
     )
 )
@@ -87,7 +91,7 @@ server <- function(input, output) {
     })
     
     observe({
-        position = 7
+        position = isolate(ttt_rv$position)
         ttt_rv$game$play(position)
         
     })
@@ -144,14 +148,56 @@ server <- function(input, output) {
         
     })
     
-    output$stats <- renderText({
+#    output$stats <- renderText({
 #        paste0("x=", input$plot_click$x, "\ny=", input$plot_click$y)
-        paste0("x=", input$plot_click$x, "\ny=", ttt_rv$y, "\nposition=", ttt_rv$position)
+#        paste0("x=", input$plot_click$x, "\ny=", ttt_rv$y, "\nposition=", ttt_rv$position)
+#    })
+    
+ #   output$game <- renderTable({    
+ #       ttt_rv$game$show_board() %>% capture.output() %>% 
+ #           paste(collapse = "\n") %>% gsub(pattern = "\\|", replacement = "") %>% I() %>% 
+ #           read_delim(delim = " ", skip = 2, col_names = c("-", "_", "A", "B", "C"), col_types = "ccccc")  %>%
+ #           select(!one_of("-"))
+ #   })
+    
+    output$info <- renderPrint({
+        req(input$plot_click)
+        x <- round(input$plot_click$x, 2)
+        y <- round(input$plot_click$y, 2)
+        ttt_rv$position <- get_position(input$plot_click$x, input$plot_click$y)
+        cat("Click position: ", "[", x, ", ", y, "]", "\n", sep = "")
+        cat("Matrix position: ",  ttt_rv$position , "\n")
+        cat("Is move legal?: ",  ttt_rv$game$play(ttt_rv$position), "\n") # and game has not been over.
+        cat("Board:\n ")
+        cat(ttt_rv$game$show_board(), "\n")
+        cat("Next state:\n")
+        cat(ttt_rv$game$next_state(position = 1 + ttt_rv$position), "\n")
     })
     
-    output$game <- renderTable({    
-        ttt_rv$game$show_board() %>% capture.output() %>% I() %>% read_delim(delim = " ")
+    output$matrixPlot <- renderPlot({
+        req(input$plot_click)
+        
+        #state <- matrix(sample(c('0', '1', '2'), 9, replace = T), ncol=3)
+        #state <- state
+        state <- ttt_rv$game$state
+        state <- data.frame(state)
+        state[,1] <- as.factor(state[,1])
+        state[,2] <- as.factor(state[,2])
+        state[,3] <- as.factor(state[,3])
+        state <- matrix(state)
+        #state <- as.character(state)
+        plot(state)
+    
     })
+    
+    output$matrixInfo <- renderPrint({
+        req(input$matrixClick)
+        x <- round(input$matrixClick$x, 2)
+        y <- round(input$matrixClick$y, 2)
+        cat(x, y)
+       # ttt_rv$position <- get_position(input$plot_click$x, input$plot_click$y)
+    })
+    
 }
 
 # Run the application 

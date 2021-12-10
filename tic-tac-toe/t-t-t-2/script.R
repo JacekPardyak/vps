@@ -54,137 +54,33 @@ game <- ttt_game()
 
 tt <- game$show_board()
 tt
-game$show_board() %>% capture.output( ) %>% I() #%>% read_csv()
+game$show_board() %>% capture.output() %>% paste(collapse = "\n") %>% I() %>% read_csv()
+  gsub(pattern = "A", replacement = "\s A")%>% 
 
-%>% capture.output( )
-game$next_state(position)
+#-> text #%>% I() %>% read_delim(delim = " ")
 
-game$index_to_str(position)
+text <- text  %>% gsub(pattern = "-", replacement ="- ")
 
-game$nextmover
+text %>% I() %>% read_delim(delim = " ")
 
-game$initialize()
-
-game$to_index(position)
-
-game$play(position)
+ #%>% gsub(pattern = "A", replacement ="")
 
 
-p <- ttt_human()
-p
+?gsub
 
-p$getmove() <- 1
 
-# from blog
+
+# plot next state
+position = 1
 game <- ttt_game()
 game$play(position)
-game$play(1)
-print(game)
-
 game$play(2)
-game$play(7)
 print(game)
+#cat(game$next_state(position = 1 + ttt_rv$position), "\n")
 
+game$state # -> state
 
-# next_state returns matrx
-m = game$next_state(position)
+library(plot.matrix)
 
-class(m)
-position = 100
-game$next_state(position)
+plot(state, breaks=range(state))
 
-
-# position is changing from 1 to 9
-
-
-ttt(ttt_human(), ttt_ai())
-
-
-## Not run: 
-p <- ttt_human()
-p$getmove() <- 1
-
-
-encode_postion <- function(x, y){
-  
-}
-
-## End(Not run)
-
-
-
-sounds <- c(ping = "microwave_ping_mono.wav",
-            coin = "smb_coin.wav",
-            fanfare = "victory_fanfare_mono.wav",
-            complete = "work_complete.wav",
-            treasure = "new_item.wav",
-            ready = "ready_master.wav",
-            shotgun = "shotgun.wav",
-            mario = "smb_stage_clear.wav",
-            wilhelm = "wilhelm.wav",
-            facebook = "facebook.wav",
-            sword = "sword.wav")
-
-
-
-
-
-####
-library(tictactoe)
-game <- ttt_game()
-
-for (i in c(1:9)) {
-  print(game$play(i))
-  
-}
-
-game$play(1)
-game$state
-print(game)
-
-game$nextmover
-game$next_state(1) <- 0
-class(game$next_state(2)[1,1] )
-class(1)
-
-
-game$play(2)
-game$play(7)
-print(game)
-
-game$history
-
-?ttt_game
-
-
-game$state[1,1] <- 0
-
-
-# ------------------------------------
-# -------- app
-
-HEIGHT = 300
-WIDTH = 300 
-
-A = interval(        0, WIDTH/3, "[)")
-B = interval(  WIDTH/3, 2*WIDTH/3, "[)")
-C = interval(2*WIDTH/3, WIDTH, "[]")
-
-P = interval(2*HEIGHT/3, HEIGHT, "[]")
-R = interval(  HEIGHT/3, 2*HEIGHT/3, "[)")
-S = interval(         0, HEIGHT/3, "[)")
-
-get_position <- function(p, q){
-  x = interval(p, p, "[]"); y = interval(q, q, "[]")
-  if(interval_intersection(A, x) == x & interval_intersection(P, y) == y) {position = 1}
-  if(interval_intersection(A, x) == x & interval_intersection(R, y) == y) {position = 2}
-  if(interval_intersection(A, x) == x & interval_intersection(S, y) == y) {position = 3}
-  if(interval_intersection(B, x) == x & interval_intersection(P, y) == y) {position = 4}
-  if(interval_intersection(B, x) == x & interval_intersection(R, y) == y) {position = 5}
-  if(interval_intersection(B, x) == x & interval_intersection(S, y) == y) {position = 6}
-  if(interval_intersection(C, x) == x & interval_intersection(P, y) == y) {position = 7}
-  if(interval_intersection(C, x) == x & interval_intersection(R, y) == y) {position = 8}
-  if(interval_intersection(C, x) == x & interval_intersection(S, y) == y) {position = 9}
-  position}
-
-get_position(0, 0)
