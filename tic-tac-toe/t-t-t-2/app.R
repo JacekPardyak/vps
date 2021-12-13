@@ -176,15 +176,13 @@ server <- function(input, output) {
     
     output$matrixPlot <- renderPlot({
         req(input$plot_click)
-        
+        ttt_rv$position <- get_position(input$plot_click$x, input$plot_click$y)
         #state <- matrix(sample(c('0', '1', '2'), 9, replace = T), ncol=3)
         #state <- state
         state <- ttt_rv$game$state
-        state <- data.frame(state)
-        state[,1] <- as.factor(state[,1])
-        state[,2] <- as.factor(state[,2])
-        state[,3] <- as.factor(state[,3])
-        state <- matrix(state)
+        state[state == 0] <- '0'
+        state[state == 1] <- '1'
+        state[state == 2] <- '2'
         #state <- as.character(state)
         plot(state)
     
