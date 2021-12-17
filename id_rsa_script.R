@@ -6,3 +6,5 @@ for (file in files) {
 }
 
 decrypt_file("./my_space/shiny-survival.zip.encryptr.bin")
+
+encrypt_file('./apriori.R')

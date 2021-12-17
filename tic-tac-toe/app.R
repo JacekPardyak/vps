@@ -1,160 +1,130 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
+#rm(list = ls())
 library(shiny)
-HEIGHT = 300
-WIDTH = 300 
-SIZE = 30
+library(tidyverse)
+library(tictactoe)
+library(ggimage)
 
-ball <- reactiveValues()
-
-# Define UI for application that draws a histogram
-ui <- fluidPage(
-  tags$head(tags$script(src = "message-handler.js")),
-  # Application title
-    titlePanel("Pong r-cade game"),
-    
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            actionButton("go", "Play"), actionButton("stop", "Stop"),  
-            h5(strong("Game stats:")),
-            verbatimTextOutput("info"),
-            h5(strong("More info:")),
-            tags$a(href="https://github.com/JacekPardyak/r-cade-games", "Click here!"),
-        ),
-        
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("pongPlot"),
-            sliderInput("paddle",
-                        "Paddle position:",
-                        min = 0,
-                        max = WIDTH - SIZE,
-                        value = WIDTH/2,
-                        step = 10)
-        )
-    )
-)
-
-# Define server logic required to draw a histogram
-server <- function(input, output) {
-    
-    session <- reactiveValues()
-    #  session$timer <- reactiveTimer(Inf)
-    
-    observeEvent(input$go,{
-        ball$x <- sample(c(1:(WIDTH -1)), 1)
-        ball$y <- sample(c(1:(HEIGHT -1)), 1)
-        
-        ball$dx =  (-1) ^ sample(c(0, 1), 1)
-        ball$dy =  (-1) ^ sample(c(0, 1), 1)
-        ball$score = 0
-        ball$label = ""
-        
-        session$timer <- reactiveTimer(30)
-        observeEvent(session$timer(),{
-            forward()
-        })
-    })
-    
-    forward <- function(){
-        if (ball$x <= 0 | ball$x >= WIDTH){
-            ball$dx = -1 * ball$dx
-        }
-        
-        ball$x = ball$x + ball$dx
-        ball$x = min(max(ball$x, 0), WIDTH)
-        
-        if (ball$y >= HEIGHT){
-            ball$dy = -1 * ball$dy
-        }
-        
-        if (ball$y <= 0 & ( (ball$x >= input$paddle) & ball$x < (input$paddle + SIZE))){
-            ball$dy = -1 * ball$dy
-            ball$score <- ball$score + 1
-        }
-        
-        ball$y = ball$y + ball$dy
-        ball$y = min(max(ball$y, 0), HEIGHT) 
-        
-        if (ball$y <= 0 & ( (ball$x < input$paddle) |
-                            ball$x > (input$paddle + SIZE))){
-          ball$x = WIDTH/2
-          ball$y = HEIGHT/2
-          ball$label = "GAME OVER"
-          session$timer<-reactiveTimer(Inf)
-        }
-        
-        if(ball$y >= HEIGHT | ball$x <= 0 | ball$x >= WIDTH |
-           (ball$y <= 0 & ( (ball$x >= input$paddle) & ball$x < (input$paddle + SIZE)))){
-          insertUI(selector = "#go",
-                   where = "afterEnd",
-                   # beep.wav should be in /www of the shiny app
-                   ui = tags$audio(src = "microwave_ping_mono.wav", 
-                                   type = "audio/wav", autoplay = T, controls = NA, 
-                                   style="display:none;"))
-        }
-        
-        if(ball$x == WIDTH/2 & ball$y == HEIGHT/2){
-          insertUI(selector = "#go",
-                   where = "afterEnd",
-                   # beep.wav should be in /www of the shiny app
-                   ui = tags$audio(src = "facebook.wav", 
-                                   type = "audio/wav", autoplay = T, controls = NA, 
-                                   style="display:none;"))
-        }
-    }
-    
-    observeEvent(input$stop,{
-        session$timer<-reactiveTimer(Inf)
-    })
-    
-    output$pongPlot <- renderPlot({
-        par(mar = rep(1, 4), bg = "black")
-        plot.new()
-        plot.window(xlim = c(0, WIDTH), ylim = c(0, HEIGHT))
-        
-        # court
-        lines(
-            x = c(WIDTH, WIDTH, 0, 0),
-            y = c(0, HEIGHT, HEIGHT, 0),
-            type = "l",
-            lwd = 5,
-            col = "white"
-        )
-        # ball
-        points(
-            x = ball$x, 
-            y = ball$y,
-            pch = 15,
-            cex = 5,
-            col = "white"
-        )
-        # paddle - slider
-        lines(
-            x = c(input$paddle, input$paddle + SIZE),
-            y = c(0, 0),
-            type = "l",
-            lwd = 5,
-            col = "white"
-        )
-        # text
-        text(WIDTH/2, 2 * HEIGHT/3, ball$label, cex=7, col = "white")
-    })
-    
-    output$info <- renderText({
-        paste0("x=", ball$x , "\ny=", ball$y,
-               "\ndx=", ball$dx , "\ndy=", ball$dy, "\nscore=", ball$score   )
-    })
-    
+get_position <- function(x, y) {
+  position = 0
+  position = ifelse(0.5 <= x &
+                      x < 1.5 & 2.5 <= y & y <= 3.5, 1, position)
+  position = ifelse(0.5 <= x &
+                      x < 1.5 & 1.5 <= y & y < 2.5, 2, position)
+  position = ifelse(0.5 <= x &
+                      x < 1.5 & 0.5 <= y & y < 1.5, 3, position)
+  position = ifelse(1.5 <= x &
+                      x < 2.5 & 2.5 <= y & y <= 3.5, 4, position)
+  position = ifelse(1.5 <= x &
+                      x < 2.5 & 1.5 <= y & y < 2.5, 5, position)
+  position = ifelse(1.5 <= x &
+                      x < 2.5 & 0.5 <= y & y < 1.5, 6, position)
+  position = ifelse(2.5 <= x &
+                      x <= 3.5 & 2.5 <= y & y <= 3.5, 7, position)
+  position = ifelse(2.5 <= x &
+                      x <= 3.5 & 1.5 <= y & y < 2.5, 8, position)
+  position = ifelse(2.5 <= x &
+                      x <= 3.5 & 0.5 <= y & y < 1.5, 9, position)
+  position
 }
 
-# Run the application 
-shinyApp(ui = ui, server = server)
+# create place for reactive game values
+ttt_rv <- reactiveValues()
+ttt_rv$position = 0
+ttt_rv$game <- ttt_game()
+ttt_rv$state = matrix(rep(0, 9), nrow = 3)
+
+ui <- fluidPage(
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+  ),
+  
+  titlePanel("TIC-TAC-TOE"),
+  
+  fluidRow(
+    column(
+      7,
+      tags$text(
+        "To play the game, select the AI strength (0 for the weakest, 5 for the
+        strongest) and click on the desired spot in the grid. The computer will 
+        make the next move, then you, and so on. To play again, click RESET.
+        To begin click RESET twice."
+      )
+    ),
+    column(3,
+           sliderInput(
+             "level",
+             "AI strength:",
+             min = 0,
+             max = 5,
+             value = 3
+           )),
+    column(2,
+           actionButton("go", "RESET"))
+  ),
+  plotOutput("plot", click = "plot_click"),
+  verbatimTextOutput("gameInfo")
+)
+
+server <- function(input, output) {
+  observeEvent(input$go, {
+    ttt_rv$game <- ttt_game()
+    ttt_rv$state <- matrix(rep(0, 9), nrow = 3)
+    ttt_rv$position <- 0
+  })
+  
+  output$gameInfo <- renderPrint({
+    # player logic
+    req(input$plot_click)
+    ttt_rv$position <-
+      get_position(input$plot_click$x, input$plot_click$y)
+    ttt_rv$game$play(ttt_rv$position)
+    # check if interactive board match package board
+    # cat(ttt_rv$game$show_board())
+    # computer logic
+    if (ttt_rv$game$nextmover == 2) {
+      computer <- ttt_ai(level = input$level)
+      position = computer$getmove(ttt_rv$game)
+      ttt_rv$game$play(position)
+    }
+    # game initiation and management
+    ttt_rv$state <- ttt_rv$game$state
+    if (ttt_rv$game$check_result() == 0) {
+      cat("NO MOVE", "\n")
+    }
+    if (ttt_rv$game$check_result() == 1) {
+      cat("?????", "\n")
+    }
+    if (ttt_rv$game$check_result() == 2) {
+      cat("GAME OVER", "\n")
+    }
+    if (ttt_rv$game$check_win(player = 1)) {
+      cat("PLAYER WON")
+    }
+    if (ttt_rv$game$check_win(player = 2)) {
+      cat("COMPUTER WON")
+    }
+  })
+  
+  
+  dat <- reactive({
+    ttt_rv$state %>% cbind(paste0("R", c(1:3))) %>% as.data.frame() %>%
+      `colnames<-`(c(paste0("C", c(1:3)), "Row")) %>% gather("Column", "State", -Row) %>%
+      mutate(State = as.numeric(State)) %>% mutate(image = if_else(
+        State == 2,
+        './www/circle.svg',
+        if_else(State == 1, './www/cross.svg', NULL)
+      ))
+  })
+  
+  output$plot <- renderPlot({
+    dat() %>% ggplot() +
+      aes(x = Column, y = Row, image = image) +
+      geom_image(size = 0.2) +
+      scale_y_discrete(limits = rev) +
+      geom_hline(yintercept = seq(0.5, 3.5, 1) , color = "#428bca", size = 3) +
+      geom_vline(xintercept = seq(0.5, 3.5, 1) , color = "#428bca", size = 3) +
+      theme_void() + coord_fixed()
+  })
+}
+
+shinyApp(ui, server)
