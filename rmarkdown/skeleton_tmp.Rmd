@@ -1,28 +1,41 @@
 ---
-title: "A Tufte Handout Example"
-runningheader: "Tufte Handout with R Markdown" # only for pdf output
-subtitle: "An implementation in R Markdown" # only for html output
-author: "JJ Allaire and Yihui Xie"
-date: "`r Sys.Date()`"
-output:
-  tufte::tufte_html: default
-  tufte::tufte_handout:
-    citation_package: natbib
-    latex_engine: xelatex
-  tufte::tufte_book:
-    citation_package: natbib
-    latex_engine: xelatex
-bibliography: skeleton.bib
-link-citations: yes
+title: "Untitled"
+author: "JG Pardyak"
+date: "8-1-2022"
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-library(tufte)
-# invalidate cache when the tufte version changes
-knitr::opts_chunk$set(cache.extra = packageVersion('tufte'))
-options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction
+## R Markdown
 
-The Tufte handout style is a style that Edward Tufte uses in his books and handouts. Tufte's style is known for its extensive use of sidenotes, tight integration of graphics with text, and well-set typography. This style has been implemented in LaTeX and HTML/CSS^[See Github repositories [tufte-latex](https://github.com/tufte-latex/tufte-latex) and [tufte-css](https://github.com/edwardtufte/tufte-css)], respectively. We have ported both implementations into the [**tufte** package](https://github.com/rstudio/tufte). If you want LaTeX/PDF output, you may use the `tufte_handout` format for handouts, and `tufte_book` for books. For HTML output, use `tufte_html`. These formats can be either specified in the YAML metadata at the beginning of an R Markdown document (see an example below), or passed to the `rmarkdown::render()` function. See @R-rmarkdown for more information about **rmarkdown**.
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Rozdział drugi
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r samochody}
+summary(cars)
+```
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
