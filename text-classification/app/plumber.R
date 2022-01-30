@@ -8,6 +8,13 @@
 #
 
 library(plumber)
+library(tidyverse)
+library(tidytext)
+#coefs = read_csv("text-classification/app/coefs.csv")
+coefs = read_csv("coefs.csv")
+intercept <- coefs %>%
+  filter(term == "(Intercept)") %>%
+  pull(estimate)
 
 #* @apiTitle Plumber Example API
 
@@ -31,11 +38,26 @@ function() {
 #* @param b The second number to add
 #* @post /sum
 function(a, b) {
-    as.numeric(a) + as.numeric(b) + my_fun()
+    as.numeric(a) + as.numeric(b)
 }
 
 
-my_fun <- function(){
-  runif(1)
-  
+#* Return language of a text EN/PL
+#* @param q The text
+#* @get /predict
+function(q) {
+  q %>% tibble() %>% rename(text = '.') %>% 
+    mutate(document = 0) %>%
+    unnest_tokens(word, text) %>%
+    inner_join(coefs, by = c("word" = "term")) %>%
+    group_by(document) %>%
+    summarize(score = sum(estimate)) %>%
+    mutate(probability = plogis(intercept + score)) %>%
+    mutate(language = if_else(probability > 0.5, "EN", "PL")) %>%
+    select(probability, language) #%>% pull()
 }
+
+
+#my_fun("I nie wiedziałem co się działo w około mnie")
+#my_fun("Gerwazy sat down upon the floor, leaned against the wall, and bent down")
+ 
