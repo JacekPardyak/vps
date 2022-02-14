@@ -1,10 +1,10 @@
 {
-  "doe": "a deer, a female deer",
-  "ray": "a drop of golden sun",
+  "how": "we meet once a month in the last Thursday of each month",
+  "who": "each time we invite different person - expert in a domain",
   "pi": 3.14159,
   "xmas": true,
   "french-hens": 3,
-  "calling-birds": [
+  "why": [
      "huey",
      "dewey",
      "louie",
@@ -18,6 +18,15 @@
     "count": 1,
     "location": "a pear tree"
   },
-  "turtle-doves": "two"
+  "how to get prepared": "Make your homeworkeach week proceeding the Hackathon we post the data and ask you to explore the data",
+  "how to participate": "Listen to the given lecture",
+  ""
   }
 }
+
+# blue Thursdya
+
+# what tools we use "deep-blue" is a shared computing environment
+# R & Python ar prepared and accessed with R Studio
+# How we collaborate - we get ready, follow and report
+# report in r-markdown
