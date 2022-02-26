@@ -20,7 +20,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Obszar roboczy 1</dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -38,12 +37,12 @@
      id="namedview87"
      showgrid="false"
      inkscape:zoom="0.65217731"
-     inkscape:cx="542.73596"
-     inkscape:cy="460.41252"
+     inkscape:cx="349.17361"
+     inkscape:cy="358.97735"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Warstwa_2" />
+     inkscape:current-layer="svg85" />
   <defs
      id="defs4">
     <style
@@ -51,12 +50,8 @@
   </defs>
   <title
      id="title6">Obszar roboczy 1</title>
-  <g
-     id="Warstwa_2"
-     data-name="Warstwa 2">
-    <path
-       class="cls-1"
-       d="M926.68,85.27C806.54-34.86,675.76-7.43,594.19,42.63,519.92,88.2,502.52,156.81,500,168.73c-2.52-11.92-19.92-80.53-94.2-126.1C324.23-7.43,193.45-34.86,73.32,85.27-4.54,163.14-52.7,392.53,99.9,613.64,266.55,855.11,465.91,950,497.79,964l2.21,1,2.21-1c31.87-14,231.24-108.89,397.89-350.36C1052.7,392.53,1004.54,163.14,926.68,85.27Z"
-       id="path8" />
-  </g>
+  <path
+     class="cls-1"
+     d="M 926.68,85.27 C 806.54,-34.86 675.76,-7.43 594.19,42.63 519.92,88.2 502.52,156.81 500,168.73 497.48,156.81 480.08,88.2 405.8,42.63 324.23,-7.43 193.45,-34.86 73.32,85.27 -4.54,163.14 -52.7,392.53 99.9,613.64 266.55,855.11 465.91,950 497.79,964 l 2.21,1 2.21,-1 C 534.08,950 733.45,855.11 900.1,613.64 1052.7,392.53 1004.54,163.14 926.68,85.27 Z"
+     id="path8" />
 </svg>
